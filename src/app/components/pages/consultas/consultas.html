@@ -1,0 +1,235 @@
+<div class="container-fluid consultas-page">
+    <!-- TÍTULO + BOTÃO NOVO -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-0">Consultas</h2>
+            <small class="text-muted">Gerencie as consultas agendadas na clínica</small>
+        </div>
+
+        <div class="col-auto d-flex align-items-center">
+            <button class="btn btn-primary">
+                + Nova Consulta
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- FILTRO POR PERÍODO -->
+        <form class="row g-3 align-items-end justify-content-center text-center mb-3">
+
+            <!-- DATA INÍCIO -->
+            <div class="col-12 col-sm-4 col-md-3">
+                <label for="dataInicio" class="form-label">Data início</label>
+                <input type="date" id="dataInicio" class="form-control" />
+            </div>
+
+            <!-- DATA FIM -->
+            <div class="col-12 col-sm-4 col-md-3">
+                <label for="dataFim" class="form-label">Data fim</label>
+                <input type="date" id="dataFim" class="form-control" />
+            </div>
+
+            <!-- MÉDICO -->
+            <div class="col-12 col-sm-4 col-md-3">
+                <label for="medicoSelect" class="form-label">Médico</label>
+                <select id="medicoSelect" class="form-select">
+                    <option value="" selected>Selecione um médico</option>
+
+                    <!-- Exemplo estático -->
+                    <option>Dr. João da Silva</option>
+                    <option>Dra. Ana Paula</option>
+                    <option>Dr. Pedro Albuquerque</option>
+                    <option>Dra. Beatriz Nogueira</option>
+
+                    <!-- Depois ficará assim:
+      <option *ngFor="let m of medicos()"
+              [value]="m.id">
+        {{ m.nome }}
+      </option>
+      -->
+                </select>
+            </div>
+
+            <!-- BOTÕES -->
+            <div class="col-12 col-sm-4 col-md-3 d-flex gap-2 justify-content-center">
+                <button type="button" class="btn btn-primary mt-4">
+                    Filtrar
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary mt-4">
+                    Limpar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- LISTA DE CONSULTAS -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+
+                <!-- CABEÇALHO DA TABELA AJUSTADO -->
+                <div class="card-header text-center fw-bold fs-5">
+                    Consultas agendadas
+                </div>
+
+                <!-- TABELA DE CONSULTAS -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Médico</th>
+                                    <th>Paciente</th>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Status</th>
+                                    <th style="width: 220px;">Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- AGENDADA -->
+                                <tr>
+                                    <td>Dr. João da Silva</td>
+                                    <td>Maria Fernanda</td>
+                                    <td>25/11/2025</td>
+                                    <td>09:30</td>
+                                    <td>
+                                        <span class="badge text-bg-success">Agendada</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                Remarcar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- CONFIRMADA -->
+                                <tr>
+                                    <td>Dra. Ana Paula</td>
+                                    <td>João Pereira</td>
+                                    <td>25/11/2025</td>
+                                    <td>14:00</td>
+                                    <td>
+                                        <span class="badge text-bg-primary">Confirmada</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                Remarcar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- CANCELADA (vermelho) -->
+                                <tr>
+                                    <td>Dr. Pedro Albuquerque</td>
+                                    <td>Laura Martins</td>
+                                    <td>26/11/2025</td>
+                                    <td>10:15</td>
+                                    <td>
+                                        <span class="badge text-bg-danger">Cancelada</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                Remarcar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- REALIZADA -->
+                                <tr>
+                                    <td>Dra. Beatriz Nogueira</td>
+                                    <td>Carlos Eduardo</td>
+                                    <td>24/11/2025</td>
+                                    <td>15:00</td>
+                                    <td>
+                                        <span class="badge text-bg-secondary">Realizada</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                Remarcar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- QUANDO FOR DINÂMICO:
+                <tr *ngFor="let consulta of consultasFiltradas()">
+                  <td>{{ consulta.medicoNome }}</td>
+                  <td>{{ consulta.pacienteNome }}</td>
+                  <td>{{ consulta.dataConsulta | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ consulta.horaConsulta }}</td>
+                  <td>
+                    <span class="badge"
+                          [ngClass]="{
+                            'text-bg-success': consulta.status === 'AGENDADA',
+                            'text-bg-primary': consulta.status === 'CONFIRMADA',
+                            'text-bg-secondary': consulta.status === 'REALIZADA',
+                            'text-bg-danger': consulta.status === 'CANCELADA'
+                          }">
+                      {{ consulta.status | titlecase }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary"
+                              (click)="editarConsulta(consulta)">
+                        Editar
+                      </button>
+                      <button class="btn btn-sm btn-outline-warning"
+                              (click)="remarcarConsulta(consulta)">
+                        Remarcar
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger"
+                              (click)="cancelarConsulta(consulta)">
+                        Cancelar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                -->
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
