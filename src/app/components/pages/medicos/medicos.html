@@ -1,78 +1,79 @@
 <div class="container-fluid medicos-page">
-  <!-- TÍTULO + BOTÃO NOVO -->
-  <div class="row mb-4">
-    <div class="col">
-      <h2 class="mb-0">Médicos</h2>
-      <small class="text-muted">Gerencie os médicos cadastrados na clínica</small>
-    </div>
-
-    <div class="col-auto d-flex align-items-center">
-      <button class="btn btn-primary">
-        + Novo Médico
-      </button>
-    </div>
-  </div>
-
-  <!-- LISTA DE MÉDICOS -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        
-        <!-- CABEÇALHO DA TABELA AJUSTADO -->
-        <div class="card-header text-center fw-bold fs-5">
-          Médicos cadastrados
+    <!-- TÍTULO + BOTÃO NOVO -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="mb-0">Médicos</h2>
+            <small class="text-muted">Gerencie os médicos cadastrados na clínica</small>
         </div>
 
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table mb-0 align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>Nome do médico</th>
-                  <th>CPF</th>
-                  <th>CRM</th>
-                  <th>Telefone</th>
-                  <th style="width: 180px;">Ações</th>
-                </tr>
-              </thead>
+        <div class="col-auto d-flex align-items-center">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastroMedico">
+                + Novo Médico
+            </button>
 
-              <tbody>
-                <!-- EXEMPLOS ESTÁTICOS -->
-                <tr>
-                  <td>Dr. João da Silva</td>
-                  <td>123.456.789-00</td>
-                  <td>CRM 12345-RJ</td>
-                  <td>(21) 99999-0000</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary">
-                        Editar
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger">
-                        Inativar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+        </div>
+    </div>
 
-                <tr>
-                  <td>Dra. Maria Oliveira</td>
-                  <td>987.654.321-00</td>
-                  <td>CRM 67890-RJ</td>
-                  <td>(21) 98888-1111</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary">
-                        Editar
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger">
-                        Inativar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+    <!-- LISTA DE MÉDICOS -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
 
-                <!-- QUANDO FOR DINÂMICO:
+                <!-- CABEÇALHO DA TABELA AJUSTADO -->
+                <div class="card-header text-center fw-bold fs-5">
+                    Médicos cadastrados
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome do médico</th>
+                                    <th>CPF</th>
+                                    <th>CRM</th>
+                                    <th>Telefone</th>
+                                    <th style="width: 180px;">Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <!-- EXEMPLOS ESTÁTICOS -->
+                                <tr>
+                                    <td>Dr. João da Silva</td>
+                                    <td>123.456.789-00</td>
+                                    <td>CRM 12345-RJ</td>
+                                    <td>(21) 99999-0000</td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Inativar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>Dra. Maria Oliveira</td>
+                                    <td>987.654.321-00</td>
+                                    <td>CRM 67890-RJ</td>
+                                    <td>(21) 98888-1111</td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                Editar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Inativar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- QUANDO FOR DINÂMICO:
                 <tr *ngFor="let medico of medicos()">
                   <td>{{ medico.nome }}</td>
                   <td>{{ medico.cpf }}</td>
@@ -93,13 +94,70 @@
                   </td>
                 </tr>
                 -->
-              </tbody>
+                            </tbody>
 
-            </table>
-          </div>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
-
-      </div>
     </div>
-  </div>
+</div>
+
+<!-- MODAL DE CADASTRO -->
+<div class="modal fade" id="modalCadastroMedico" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Cabeçalho -->
+            <div class="modal-header">
+                <h5 class="modal-title">Cadastrar Médico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Corpo (formulário) -->
+            <div class="modal-body">
+                <form>
+
+                    <!-- Nome -->
+                    <div class="mb-3">
+                        <label class="form-label">Nome do médico</label>
+                        <input type="text" class="form-control">
+                    </div>
+
+                    <!-- CPF -->
+                    <div class="mb-3">
+                        <label class="form-label">CPF</label>
+                        <input type="text" class="form-control">
+                    </div>
+
+                    <!-- CRM -->
+                    <div class="mb-3">
+                        <label class="form-label">CRM</label>
+                        <input type="text" class="form-control">
+                    </div>
+
+                    <!-- Telefone -->
+                    <div class="mb-3">
+                        <label class="form-label">Telefone</label>
+                        <input type="text" class="form-control">
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-primary">
+                    Salvar
+                </button>
+            </div>
+
+        </div>
+    </div>
 </div>

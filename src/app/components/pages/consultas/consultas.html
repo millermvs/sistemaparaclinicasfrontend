@@ -7,9 +7,10 @@
         </div>
 
         <div class="col-auto d-flex align-items-center">
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastroConsulta">
                 + Nova Consulta
             </button>
+
         </div>
     </div>
 
@@ -230,6 +231,91 @@
                 </div>
 
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CADASTRO DE CONSULTA -->
+<div class="modal fade" id="modalCadastroConsulta" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Cabeçalho -->
+            <div class="modal-header">
+                <h5 class="modal-title">Cadastrar Consulta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Corpo -->
+            <div class="modal-body">
+                <form>
+
+                    <!-- Médico -->
+                    <div class="mb-3">
+                        <label class="form-label">Médico</label>
+                        <select class="form-select">
+                            <option selected disabled>Selecione um médico</option>
+
+                            <!-- Exemplo estático (substituir por *ngFor futuramente) -->
+                            <option>Dr. João da Silva</option>
+                            <option>Dra. Ana Paula</option>
+                            <option>Dr. Pedro Albuquerque</option>
+                            <option>Dra. Beatriz Nogueira</option>
+                        </select>
+                    </div>
+
+                    <!-- Paciente -->
+                    <div class="mb-3">
+                        <label class="form-label">Paciente</label>
+                        <select class="form-select">
+                            <option selected disabled>Selecione um paciente</option>
+
+                            <!-- Exemplo estático -->
+                            <option>Maria Fernanda</option>
+                            <option>João Pereira</option>
+                            <option>Laura Martins</option>
+                            <option>Carlos Eduardo</option>
+                        </select>
+                    </div>
+
+                    <!-- Data -->
+                    <div class="mb-3">
+                        <label class="form-label">Data da consulta</label>
+                        <input type="date" class="form-control">
+                    </div>
+
+                    <!-- Hora -->
+                    <div class="mb-3">
+                        <label class="form-label">Hora da consulta</label>
+                        <input type="time" class="form-control">
+                    </div>
+
+                    <!-- Tipo de consulta (opcional) -->
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de consulta</label>
+                        <select class="form-select">
+                            <option selected disabled>Selecione o tipo</option>
+                            <option>Retorno</option>
+                            <option>Avaliação</option>
+                            <option>Primeira consulta</option>
+                            <option>Rotina</option>
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-primary">
+                    Salvar
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
