@@ -1,9 +1,15 @@
 <div class="app-layout d-flex">
   <aside class="sidebar" [class.sidebar-expanded]="sidebarExpanded()">
-  
-    <button class="toggle-btn" (click)="toggleSidebar()">
+
+    <button class="toggle-btn" (click)="toggleSidebar()" *ngIf="!sidebarExpanded()">
       ☰
     </button>
+
+    <!-- BOTÃO 'X' QUANDO O MENU ESTÁ ABERTO -->
+    <button class="toggle-btn close-btn" *ngIf="sidebarExpanded()" (click)="toggleSidebar()">
+     ⮜
+    </button>
+
 
     <nav class="menu mt-3">
       <a class="menu-item" routerLink="pages/dashboard">

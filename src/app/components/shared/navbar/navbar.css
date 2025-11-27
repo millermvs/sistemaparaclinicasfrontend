@@ -29,6 +29,26 @@
   font-size: 18px;
 }
 
+.toggle-btn:hover {
+  background-color: #e9ecef;
+}
+
+.toggle-btn, .close-btn {
+  border: none;
+  background: transparent;
+  padding: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.close-btn {
+  text-align: right; /* o X fica no canto direito */
+  padding-right: 16px;
+}
+
+
 /* ----- ITENS DO MENU ----- */
 .menu {
   display: flex;
