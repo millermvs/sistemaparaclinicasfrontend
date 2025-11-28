@@ -1,0 +1,54 @@
+<div class="auth-wrapper d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card shadow-sm auth-card p-4 p-md-5">
+
+        <!-- LOGO / NOME DO SISTEMA -->
+        <div class="text-center mb-4">
+            <!-- Se quiser depois trocar por <img> -->
+            <div class="fw-bold fs-4">Sistema de Agendamentos</div>
+            <small class="text-muted">Acesse sua conta para continuar</small>
+        </div>
+
+        <!-- MENSAGEM DE ERRO GERAL (opcional, você controla no TS) -->
+        <!--
+    <div class="alert alert-danger py-2" *ngIf="erroLogin">
+      Usuário ou senha inválidos.
+    </div>
+    -->
+
+        <!-- FORMULÁRIO DE AUTENTICAÇÃO -->
+        <form>
+            <!-- USUÁRIO / E-MAIL -->
+            <div class="mb-3">
+                <label class="form-label">E-mail ou usuário</label>
+                <input type="text" class="form-control" placeholder="seuemail@exemplo.com"> <!--
+                    formControlName="usuario" -->                
+            </div>
+
+            <!-- SENHA -->
+            <div class="mb-3">
+                <label class="form-label d-flex justify-content-between">
+                    <span>Senha</span>
+                    <a href="#" class="small text-decoration-none">Esqueci minha senha</a>
+                </label>
+                <input type="password" class="form-control" placeholder="Digite sua senha"><!-- formControlName="senha"
+                    -->
+            </div>
+
+            <!-- BOTÃO ENTRAR -->
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary"> <!-- (click)="autenticar()" ou (ngSubmit) no form, você
+                    escolhe -->
+                    Entrar
+                </button>
+            </div>
+
+            <!-- RODAPÉ / TEXTO AUXILIAR -->
+            <div class="text-center">
+                <small class="text-muted">
+                    Acesso restrito a usuários autorizados da clínica.
+                </small>
+            </div>
+        </form>
+
+    </div>
+</div>

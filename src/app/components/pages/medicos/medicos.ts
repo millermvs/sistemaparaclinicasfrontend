@@ -85,14 +85,13 @@ export class Medicos {
     const raw = this.formAddMedico.value;
 
     return {
+      idClinica: 1,
       nomeMedico: raw.nomeMedico,
       cpfMedico: this.removeMascaraCPF(raw.cpfMedico ?? ''),
       crmMedico: raw.crmMedico?.toUpperCase(),
       whatsAppMedico: this.converteWhatsApp(raw.whatsAppMedico ?? '')
     };
   }
-
-
 
   addMedico() {
     if (this.formAddMedico.invalid) {
@@ -103,7 +102,14 @@ export class Medicos {
     const medico = this.prepararPayload();
     console.log("Enviando pro backend:", medico);
 
-    // exemplo da request:
-    //this.http.post('/api/medicos', medico).subscribe(...)
+    const endpoint = "http://localhost:8080/api/v1/medicos/cadastrar";
+    this.http.post(endpoint, medico).subscribe({
+      next: (response: any) => {
+        console.log(response.resposta)
+      },
+      error: (e: any) => {
+        console.log(e.error)
+      }
+    })
   }
 }

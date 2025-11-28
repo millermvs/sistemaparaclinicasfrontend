@@ -3,8 +3,13 @@ import { Dashboard } from './components/pages/dashboard/dashboard';
 import { Medicos } from './components/pages/medicos/medicos';
 import { Pacientes } from './components/pages/pacientes/pacientes';
 import { Consultas } from './components/pages/consultas/consultas';
+import { Login } from './components/pages/login/login';
 
 export const routes: Routes = [
+    {
+        path : 'pages/login',
+        component : Login
+    },
     {
         path : 'pages/dashboard',
         component : Dashboard
@@ -22,6 +27,6 @@ export const routes: Routes = [
         component : Consultas
     },
     {
-        path : '', pathMatch : 'full', redirectTo : 'pages/dashboard'
+        path : '', pathMatch : 'full', redirectTo : 'pages/login'
     }
 ];
