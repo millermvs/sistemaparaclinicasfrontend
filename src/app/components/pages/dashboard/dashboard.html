@@ -16,7 +16,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="card-title text-muted mb-1">Médicos</h6>
-              <h3 class="mb-0">12</h3>
+              <h3 class="mb-0">{{totalMedicos()}}</h3>
             </div>
             <div class="dash-icon bg-primary-subtle">
               🩺
@@ -29,7 +29,7 @@
 
     <!-- Pacientes -->
     <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card dash-card">
+      <div class="card dash-card" routerLink="/pages/pacientes">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -47,7 +47,7 @@
 
     <!-- Consultas hoje -->
     <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card dash-card">
+      <div class="card dash-card" routerLink="/pages/consultas">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
             <div>

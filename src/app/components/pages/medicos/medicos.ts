@@ -4,7 +4,6 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 
-
 @Component({
   selector: 'app-medicos',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxMaskDirective],
@@ -12,111 +11,106 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
   templateUrl: './medicos.html',
   styleUrl: './medicos.css',
 })
-export class Medicos{
+export class Medicos {
 
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
 
-  mensagem = signal<string>('');
+  mensagemErroPagPrincipal = signal<string>('');
+  mensagemModal = signal<string>('');
   tipoMensagem = signal<string>('');
   paginaAtual = signal<number>(0);        // página começa em 0 (Spring padrão)
   totalPaginas = signal<number>(0);       // vem do backend
   medicos = signal<any[]>([]);
-  readonly tamanhoPagina = 10; 
+  readonly tamanhoPagina = 10;
 
-  ngOnInit(){
+  ngOnInit() {
     this.consultarMedicos(this.paginaAtual());
   }
 
-  private readonly baseUrl = 'http://localhost:8080/api/v1/clinicas/1/medicos';  
+  idClinica: number = 1;
+  private readonly baseUrl = `http://localhost:8080/api/v1/clinicas/1/medicos`;
 
-  consultarMedicos(page: number){    
+  consultarMedicos(page: number) {
     let endpointConsultar = this.baseUrl + "?page=" + page + "&size=" + this.tamanhoPagina;
     this.http.get(endpointConsultar).subscribe({
-      next: (response: any)=>{
+      next: (response: any) => {
         this.medicos.set(response.content);
+
         // atualiza controles de paginação
         this.paginaAtual.set(response.number);
         this.totalPaginas.set(response.totalPages);
-
-        console.log('Médicos na página:', this.medicos());
-        console.log('Página atual:', this.paginaAtual(), 'Total páginas:', this.totalPaginas());
       },
-      error: (e)=>{
+      error: (e: any) => {
         console.log(e.error);
+        this.mensagemErroPagPrincipal.set(e.error.errors);
       }
     })
-  } 
+  }
   irParaPagina(page: number): void {
-    // guarda de segurança: não deixa ir pra página inválida
+    // não deixa ir pra página inválida
     if (page < 0 || page >= this.totalPaginas()) {
       return;
     }
-
     this.consultarMedicos(page);
-  } 
+  }
 
   totalPaginasArray(): number[] {
     // gera [0, 1, 2, ..., totalPaginas-1]
     return Array.from({ length: this.totalPaginas() }, (_, index) => index);
   }
 
-  formAddMedico = this.fb.group({
-    nomeMedico: [
-      '',
-      [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]
-    ],
+  capitalizarNome(valor: string): string {
 
-    cpfMedico: [
-      '',
-      [Validators.required, Validators.pattern('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')]
-    ],
+    if (!valor) return '';
 
-    crmMedico: [
-      '',
-      [Validators.required, Validators.pattern('^[0-9A-Za-z]{4,20}$')]
-    ],
-
-    whatsAppMedico: [
-      '',
-      [Validators.required, Validators.pattern('^\\(\\d{2}\\)\\d{4,5}-\\d{4}$')]
-    ]
-  });
-  
-
-  capitalizarNome() {
-    const ctrl = this.formAddMedico.get('nomeMedico');
-    let valor: string = ctrl?.value || '';
-
-    // vê se o usuário acabou de digitar um espaço
+    // Vê se o usuário colocou espaço no final
     const terminaComEspaco = valor.endsWith(' ');
 
-    // tira espaços extras do fim e deixa tudo minúsculo
+    // Normaliza texto
     valor = valor.trimEnd().toLowerCase();
 
-    if (!valor) {
-      // se ficou vazio, só mantém um espaço se ele digitou espaço
-      ctrl?.setValue(terminaComEspaco ? ' ' : '', { emitEvent: false });
-      return;
-    }
-
-    // divide por QUALQUER quantidade de espaço e já normaliza pra um só
+    // Divide palavras (um ou vários espaços)
     const palavras = valor
       .split(/\s+/)
       .map(p => p.charAt(0).toUpperCase() + p.slice(1));
 
     let resultado = palavras.join(' ');
 
-    // se o usuário digitou um espaço no final, mantém UM espaço
+    // mantém o espaço no final se o usuário digitou
     if (terminaComEspaco) {
       resultado += ' ';
     }
 
-    ctrl?.setValue(resultado, { emitEvent: false });
+    return resultado;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////CPF///////////////////////////////////////////
+  private aplicarMascaraCPF(cpf: string): string {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,
+      '$1.$2.$3-$4');
   }
 
   private removeMascaraCPF(cpf: string): string {
     return cpf.replace(/\D/g, ''); // remove tudo que não é número
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////WhatsApp//////////////////////////////////////
+  private aplicarMascaraWhats(whats: string): string {
+    // remove o 55
+    const numero = whats.startsWith('55') ? whats.slice(2) : whats;
+
+    if (numero.length === 10) {
+      // ex: 2196525005 → (21)9652-5005
+      return numero.replace(/(\d{2})(\d{4})(\d{4})/,
+        '($1)$2-$3');
+    }
+
+    // ex: 21965250053 → (21)96525-0053
+    return numero.replace(/(\d{2})(\d{5})(\d{4})/,
+      '($1)$2-$3');
   }
 
   private converteWhatsApp(whats: string): string {
@@ -125,17 +119,46 @@ export class Medicos{
     return '55' + apenasNumeros;
   }
 
-  private prepararPayload() {
-    const raw = this.formAddMedico.value;
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////FormilarioPesquisar/MetodosPesquisar//////////////////////////////////////
+  formPesquisarMedico = this.fb.group({
+    nomeMedico: [
+      '', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]
+    ]
+  });
 
-    return {
-      idClinica: 1,
-      nomeMedico: raw.nomeMedico?.trimEnd(),
-      cpfMedico: this.removeMascaraCPF(raw.cpfMedico ?? ''),
-      crmMedico: raw.crmMedico?.toUpperCase(),
-      whatsAppMedico: this.converteWhatsApp(raw.whatsAppMedico ?? '')
-    };
+  pesquisarPorNome() {
+    let endpoint = `http://localhost:8080/api/v1/medicos/consultar/${this.formPesquisarMedico.value.nomeMedico}`
+    
+    this.http.get(endpoint).subscribe({
+      next: (response: any) => {
+        console.log(response);
+      },
+      error: (e: any) => {
+
+      }
+    });
   }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////FormilariosADD/MetodosADD//////////////////////////////////////
+  formAddMedico = this.fb.group({
+    nomeMedico: [
+      '', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]
+    ],
+
+    cpfMedico: [
+      '', [Validators.required, Validators.pattern('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')]
+    ],
+
+    crmMedico: [
+      '', [Validators.required, Validators.pattern('^[0-9A-Za-z]{4,20}$')]
+    ],
+
+    whatsAppMedico: [
+      '', [Validators.required, Validators.pattern('^\\(\\d{2}\\)\\d{4,5}-\\d{4}$')]
+    ]
+  });
 
   addMedico() {
     if (this.formAddMedico.invalid) {
@@ -143,27 +166,84 @@ export class Medicos{
       return;
     }
 
-    const medico = this.prepararPayload();
+    const payload = {
+      idClinica: 1,
+      nomeMedico: this.formAddMedico.value.nomeMedico,
+      cpfMedico: this.removeMascaraCPF(this.formAddMedico.value.cpfMedico ?? ''),
+      crmMedico: this.formAddMedico.value.crmMedico?.toUpperCase(),
+      whatsAppMedico: this.converteWhatsApp(this.formAddMedico.value.whatsAppMedico ?? '')
+
+    }
 
     const endpointCadastrar = "http://localhost:8080/api/v1/medicos/cadastrar";
 
-    this.http.post(endpointCadastrar, medico).subscribe({
+    this.http.post(endpointCadastrar, payload).subscribe({
       next: (response: any) => {
         this.tipoMensagem.set("success");
-        this.mensagem.set(response.resposta);
+        this.mensagemModal.set(response.resposta);
         this.formAddMedico.reset();
         this.consultarMedicos(this.paginaAtual());
         setTimeout(() => {
-              this.mensagem.set('');
-            }, 5000);
+          this.mensagemModal.set('');
+        }, 5000);
       },
       error: (e: any) => {
         this.tipoMensagem.set("danger")
-        this.mensagem.set(e.error.message);
+        this.mensagemModal.set(e.error.message);
         setTimeout(() => {
-              this.mensagem.set('');;
-            }, 5000);
+          this.mensagemModal.set('');;
+        }, 5000);
       }
-    })   
+    })
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////FormilariosEdit/MetodosEdit//////////////////////////////////////
+  formEditMedico = this.fb.group({
+    idMedico: [
+      ''
+    ],
+    nomeMedico: [
+      '', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]
+    ],
+
+    cpfMedico: [
+      '', [Validators.required, Validators.pattern('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')]
+    ],
+
+    crmMedico: [
+      '', [Validators.required, Validators.pattern('^[0-9A-Za-z]{4,20}$')]
+    ],
+
+    whatsAppMedico: [
+      '', [Validators.required, Validators.pattern('^\\(\\d{2}\\)\\d{4,5}-\\d{4}$')]
+    ]
+  });
+
+  abrirModalEditar(medico: any) {
+    this.formEditMedico.patchValue({
+      idMedico: medico.idMedico,
+      nomeMedico: medico.nomeMedico,
+      cpfMedico: this.aplicarMascaraCPF(medico.cpfMedico),   // volto a máscara
+      crmMedico: medico.crmMedico,
+      whatsAppMedico: this.aplicarMascaraWhats(medico.whatsAppMedico)
+    });
+  }
+
+  editarMedico() {
+    if (this.formEditMedico.invalid) {
+      this.formEditMedico.markAllAsTouched();
+      return;
+    }
+
+    const payload = {
+      idMedico: this.formEditMedico.value.idMedico,
+      nomeMedico: this.formEditMedico.value.nomeMedico?.trim(),
+      cpfMedico: this.removeMascaraCPF(this.formEditMedico.value.cpfMedico || ''),
+      crmMedico: this.formEditMedico.value.crmMedico,
+      whatsAppMedico: this.converteWhatsApp(this.formEditMedico.value.whatsAppMedico || ''),
+    };
+
+    console.log("Payload de edição:", payload);
   }
 }

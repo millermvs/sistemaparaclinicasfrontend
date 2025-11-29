@@ -83,3 +83,31 @@
     min-width: 30px;
   }
 }
+
+/* BOTÃO DE PESQUISA NO PADRÃO DA SIDEBAR */
+.sidebar-btn {
+  background-color: #f8f9fa;      /* mesmo fundo da sidebar */
+  border: 1px solid #f8f9fa;      /* mesma borda leve */
+  border-radius: 6px;             /* bordas arredondadas iguais */
+  width: 40px;                    /* quadradinho igual aos ícones */
+  height: 38px;                   /* mesma altura do input */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+
+  font-size: 18px;                /* tamanho do ícone */
+  padding: 0;
+}
+
+.sidebar-btn:hover {
+  background-color: #e9ecef;      /* hover igual ao menu */
+  border-color: #ced4da;
+}
+
+.sidebar-btn:active {
+  scale: 0.95;
+}
+
+
