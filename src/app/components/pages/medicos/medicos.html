@@ -7,7 +7,7 @@
         </div>
 
         <div class="col-auto d-flex align-items-center">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastroMedico">
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalCadastroMedico">
                 + Novo Médico
             </button>
 
@@ -32,23 +32,24 @@
                                     <th>Nome do médico</th>
                                     <th>CPF</th>
                                     <th>CRM</th>
-                                    <th>Telefone</th>
+                                    <th>WhatsApp</th>
                                     <th style="width: 180px;">Ações</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <!-- EXEMPLOS ESTÁTICOS -->
-                                <tr>
-                                    <td>Dr. João da Silva</td>
-                                    <td>123.456.789-00</td>
-                                    <td>CRM 12345-RJ</td>
-                                    <td>(21) 99999-0000</td>
+                                <!-- FOR DINÂMICO:-->
+                                <tr *ngFor="let medico of medicos()">
+                                    <td>{{ medico.nomeMedico }}</td>
+                                    <td>{{ medico.cpfMedico }}</td>
+                                    <td>{{ medico.crmMedico }}</td>
+                                    <td>{{ medico.whatsAppMedico}}</td>
                                     <td>
-                                        <div class="d-flex gap-2">
+                                        <div class="d-flex justify-content-end gap-2">
                                             <button class="btn btn-sm btn-outline-secondary">
                                                 Editar
                                             </button>
+
                                             <button class="btn btn-sm btn-outline-danger">
                                                 Inativar
                                             </button>
@@ -56,48 +57,41 @@
                                     </td>
                                 </tr>
 
-                                <tr>
-                                    <td>Dra. Maria Oliveira</td>
-                                    <td>987.654.321-00</td>
-                                    <td>CRM 67890-RJ</td>
-                                    <td>(21) 98888-1111</td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <button class="btn btn-sm btn-outline-secondary">
-                                                Editar
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger">
-                                                Inativar
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <!-- QUANDO FOR DINÂMICO:
-                <tr *ngFor="let medico of medicos()">
-                  <td>{{ medico.nome }}</td>
-                  <td>{{ medico.cpf }}</td>
-                  <td>{{ medico.crm }}</td>
-                  <td>{{ medico.telefone }}</td>
-                  <td>
-                    <div class="d-flex justify-content-end gap-2">
-                      <button class="btn btn-sm btn-outline-secondary"
-                              (click)="editarMedico(medico)">
-                        Editar
-                      </button>
-                      
-                      <button class="btn btn-sm btn-outline-danger"
-                              (click)="desativarMedico(medico)">
-                        Não atende mais
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+                <!-- PAGINAÇÃO DARK PREMIUM -->
+                <nav class="pagination-container">
+                    <ul class="pagination-dark">
+
+                        <!-- Botão Anterior -->
+                        <li>
+                            <button class="page-btn" [class.disabled]="paginaAtual() === 0"
+                                (click)="irParaPagina(paginaAtual() - 1)">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                        </li>
+
+                        <!-- Números -->
+                        <li *ngFor="let page of totalPaginasArray()">
+                            <button class="page-btn" [class.active]="page === paginaAtual()"
+                                (click)="irParaPagina(page)">
+                                {{ page + 1 }}
+                            </button>
+                        </li>
+
+                        <!-- Botão Próximo -->
+                        <li>
+                            <button class="page-btn" [class.disabled]="paginaAtual() === totalPaginas() - 1"
+                                (click)="irParaPagina(paginaAtual() + 1)">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </li>
+
+                    </ul>
+                </nav>
+
 
             </div>
         </div>
@@ -191,12 +185,19 @@
                     </div>
 
                     <!-- Rodapé -->
+
+                    <div [ngClass]="{ 'show': mensagem() != '' }"
+                        class="alert alert-{{tipoMensagem()}} alert-dismissible fade show">
+                        <strong>{{ mensagem() }}</strong>
+                        <button type="button" class="btn-close" aria-label="Close" (click)="mensagem.set('')"></button>
+                    </div>
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                             Cancelar
                         </button>
 
-                        <button type="submit" class="btn btn-primary" [disabled]="formAddMedico.invalid">
+                        <button type="submit" class="btn btn-dark" [disabled]="formAddMedico.invalid">
                             Salvar
                         </button>
                     </div>

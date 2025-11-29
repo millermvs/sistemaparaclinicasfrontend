@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+
 
 @Component({
   selector: 'app-medicos',
@@ -11,11 +12,54 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
   templateUrl: './medicos.html',
   styleUrl: './medicos.css',
 })
-export class Medicos {
+export class Medicos{
 
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
 
+  mensagem = signal<string>('');
+  tipoMensagem = signal<string>('');
+  paginaAtual = signal<number>(0);        // página começa em 0 (Spring padrão)
+  totalPaginas = signal<number>(0);       // vem do backend
+  medicos = signal<any[]>([]);
+  readonly tamanhoPagina = 10; 
+
+  ngOnInit(){
+    this.consultarMedicos(this.paginaAtual());
+  }
+
+  private readonly baseUrl = 'http://localhost:8080/api/v1/clinicas/1/medicos';  
+
+  consultarMedicos(page: number){    
+    let endpointConsultar = this.baseUrl + "?page=" + page + "&size=" + this.tamanhoPagina;
+    this.http.get(endpointConsultar).subscribe({
+      next: (response: any)=>{
+        this.medicos.set(response.content);
+        // atualiza controles de paginação
+        this.paginaAtual.set(response.number);
+        this.totalPaginas.set(response.totalPages);
+
+        console.log('Médicos na página:', this.medicos());
+        console.log('Página atual:', this.paginaAtual(), 'Total páginas:', this.totalPaginas());
+      },
+      error: (e)=>{
+        console.log(e.error);
+      }
+    })
+  } 
+  irParaPagina(page: number): void {
+    // guarda de segurança: não deixa ir pra página inválida
+    if (page < 0 || page >= this.totalPaginas()) {
+      return;
+    }
+
+    this.consultarMedicos(page);
+  } 
+
+  totalPaginasArray(): number[] {
+    // gera [0, 1, 2, ..., totalPaginas-1]
+    return Array.from({ length: this.totalPaginas() }, (_, index) => index);
+  }
 
   formAddMedico = this.fb.group({
     nomeMedico: [
@@ -38,6 +82,7 @@ export class Medicos {
       [Validators.required, Validators.pattern('^\\(\\d{2}\\)\\d{4,5}-\\d{4}$')]
     ]
   });
+  
 
   capitalizarNome() {
     const ctrl = this.formAddMedico.get('nomeMedico');
@@ -70,7 +115,6 @@ export class Medicos {
     ctrl?.setValue(resultado, { emitEvent: false });
   }
 
-
   private removeMascaraCPF(cpf: string): string {
     return cpf.replace(/\D/g, ''); // remove tudo que não é número
   }
@@ -86,7 +130,7 @@ export class Medicos {
 
     return {
       idClinica: 1,
-      nomeMedico: raw.nomeMedico,
+      nomeMedico: raw.nomeMedico?.trimEnd(),
       cpfMedico: this.removeMascaraCPF(raw.cpfMedico ?? ''),
       crmMedico: raw.crmMedico?.toUpperCase(),
       whatsAppMedico: this.converteWhatsApp(raw.whatsAppMedico ?? '')
@@ -100,16 +144,26 @@ export class Medicos {
     }
 
     const medico = this.prepararPayload();
-    console.log("Enviando pro backend:", medico);
 
-    const endpoint = "http://localhost:8080/api/v1/medicos/cadastrar";
-    this.http.post(endpoint, medico).subscribe({
+    const endpointCadastrar = "http://localhost:8080/api/v1/medicos/cadastrar";
+
+    this.http.post(endpointCadastrar, medico).subscribe({
       next: (response: any) => {
-        console.log(response.resposta)
+        this.tipoMensagem.set("success");
+        this.mensagem.set(response.resposta);
+        this.formAddMedico.reset();
+        this.consultarMedicos(this.paginaAtual());
+        setTimeout(() => {
+              this.mensagem.set('');
+            }, 5000);
       },
       error: (e: any) => {
-        console.log(e.error)
+        this.tipoMensagem.set("danger")
+        this.mensagem.set(e.error.message);
+        setTimeout(() => {
+              this.mensagem.set('');;
+            }, 5000);
       }
-    })
+    })   
   }
 }

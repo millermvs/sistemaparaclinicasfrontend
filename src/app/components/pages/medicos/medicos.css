@@ -1,0 +1,85 @@
+/* Container da paginação */
+.pagination-container {
+  display: flex;
+  justify-content: center;   /* centraliza */
+  padding: 0.75rem 1rem;
+  overflow-x: auto;          /* se ficar grande, vira scroll horizontal */
+}
+
+/* Esconde barra de scroll em alguns navegadores (opcional) */
+.pagination-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pagination-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+/* Lista da paginação */
+.pagination-dark {
+  list-style: none;
+  display: inline-flex;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+}
+
+/* Botões */
+.page-btn {
+  background: #5e5d5d;
+  color: #dcdcdc;
+  border: 1px solid #333;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  font-size: 0.85rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  white-space: nowrap;
+
+  &:hover {
+    background: #2a2a2a;
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    background: #1f1f1f;
+    color: white;
+    border-color: #1f1f1f;
+    font-weight: bold;
+    transform: none;
+  }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+
+    &:hover {
+      background: #1f1f1f;
+    }
+  }
+}
+
+/* Ícones */
+.page-btn i {
+  font-size: 1rem;
+}
+
+/* Versão MOBILE: deixa tudo mais compacto */
+@media (max-width: 576px) {
+  .pagination-container {
+    justify-content: flex-start; /* começa da esquerda no mobile */
+  }
+
+  .page-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 30px;
+  }
+}
