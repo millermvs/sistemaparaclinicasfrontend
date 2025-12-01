@@ -22,6 +22,8 @@ export class Medicos {
   paginaAtual = signal<number>(0);        // página começa em 0 (Spring padrão)
   totalPaginas = signal<number>(0);       // vem do backend
   medicos = signal<any[]>([]);
+  medicosFounds = signal<any[]>([]);
+  ativarBodyPesquisa = signal<boolean>(false);
   readonly tamanhoPagina = 10;
 
   ngOnInit() {
@@ -35,6 +37,8 @@ export class Medicos {
     let endpointConsultar = this.baseUrl + "?page=" + page + "&size=" + this.tamanhoPagina;
     this.http.get(endpointConsultar).subscribe({
       next: (response: any) => {
+        this.ativarBodyPesquisa.set(false);
+        this.formPesquisarMedico.get('nomeMedico')?.setValue('');
         this.medicos.set(response.content);
 
         // atualiza controles de paginação
@@ -128,14 +132,25 @@ export class Medicos {
   });
 
   pesquisarPorNome() {
-    let endpoint = `http://localhost:8080/api/v1/medicos/consultar/${this.formPesquisarMedico.value.nomeMedico}`
-    
+    let endpoint = `http://localhost:8080/api/v1/medicos?nome=${this.formPesquisarMedico.value.nomeMedico}`;
+
+    if (this.formPesquisarMedico.invalid) {
+      this.consultarMedicos(0);
+      return;
+    }
+
     this.http.get(endpoint).subscribe({
       next: (response: any) => {
-        console.log(response);
+        this.medicosFounds.set(response);
+        this.ativarBodyPesquisa.set(true);
+        this.mensagemErroPagPrincipal.set('')
+
       },
       error: (e: any) => {
-
+        this.medicosFounds.set([]);
+        this.mensagemErroPagPrincipal.set(e.error.message);
+        this.ativarBodyPesquisa.set(true);
+        this.tipoMensagem.set("danger");
       }
     });
   }

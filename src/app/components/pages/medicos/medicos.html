@@ -32,13 +32,17 @@
                             <form [formGroup]="formPesquisarMedico" (ngSubmit)="pesquisarPorNome()" class="d-flex">
 
                                 <input type="text" class="form-control search-input" formControlName="nomeMedico"
-                                    
-                                    placeholder="Pesquisar médico...">
+                                    placeholder="Pesquisar por nome...">
 
-                                <button type="submit" class="sidebar-btn ms-2" [disabled]="formPesquisarMedico.invalid">
+                                <button type="submit" class="sidebar-btn ms-2" *ngIf="ativarBodyPesquisa()==false"
+                                    [disabled]="formPesquisarMedico.invalid">
                                     <span class="menu-icon">🔍</span>
                                 </button>
                             </form>
+                            <button type="button" class="sidebar-btn ms-2" *ngIf="ativarBodyPesquisa()==true"
+                                (click)="consultarMedicos(0)">
+                                <span class="menu-icon">✖️</span>
+                            </button>
                         </div>
 
                     </div>
@@ -57,9 +61,32 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
-                                <!-- FOR DINÂMICO:-->
+                            <tbody *ngIf="ativarBodyPesquisa()==false">
+                                <!-- FOR DINÂMICO AO INICIAR A PÁG:-->
                                 <tr *ngFor="let medico of medicos()">
+                                    <td>{{ medico.nomeMedico }}</td>
+                                    <td>{{ medico.cpfMedico }}</td>
+                                    <td>{{ medico.crmMedico }}</td>
+                                    <td>{{ medico.whatsAppMedico}}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                                data-bs-target="#modalEditarMedico" (click)="abrirModalEditar(medico)">
+                                                Editar
+                                            </button>
+
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                Deletar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                            <tbody *ngIf="ativarBodyPesquisa()==true">
+                                <!-- FOR DINÂMICO AO PESQUISAR MEDICO-->
+                                <tr *ngFor="let medico of medicosFounds()">
                                     <td>{{ medico.nomeMedico }}</td>
                                     <td>{{ medico.cpfMedico }}</td>
                                     <td>{{ medico.crmMedico }}</td>
@@ -83,7 +110,7 @@
                     </div>
                 </div>
                 <!-- PAGINAÇÃO DARK PREMIUM -->
-                <nav class="pagination-container">
+                <nav class="pagination-container" *ngIf="ativarBodyPesquisa()==false">
                     <ul class="pagination-dark">
 
                         <!-- Botão Anterior -->
@@ -112,13 +139,15 @@
 
                     </ul>
                 </nav>
-                <strong>{{ mensagemErroPagPrincipal() }}</strong>
+                <strong class="text-{{ tipoMensagem() }}">{{ mensagemErroPagPrincipal() }}</strong>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL DE CADASTRO -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------MODAL DE CADASTRO--------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
 <div class="modal fade" id="modalCadastroMedico" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
