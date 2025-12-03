@@ -91,7 +91,7 @@ export class Medicos {
 
   ///////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////CPF///////////////////////////////////////////
-  private aplicarMascaraCPF(cpf: string): string {
+  public aplicarMascaraCPF(cpf: string): string {
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,
       '$1.$2.$3-$4');
   }
@@ -102,7 +102,7 @@ export class Medicos {
 
   ///////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////WhatsApp//////////////////////////////////////
-  private aplicarMascaraWhats(whats: string): string {
+  public aplicarMascaraWhats(whats: string): string {
     // remove o 55
     const numero = whats.startsWith('55') ? whats.slice(2) : whats;
 
@@ -252,13 +252,62 @@ export class Medicos {
     }
 
     const payload = {
-      idMedico: this.formEditMedico.value.idMedico,
       nomeMedico: this.formEditMedico.value.nomeMedico?.trim(),
       cpfMedico: this.removeMascaraCPF(this.formEditMedico.value.cpfMedico || ''),
-      crmMedico: this.formEditMedico.value.crmMedico,
+      crmMedico: this.formEditMedico.value.crmMedico?.toUpperCase(),
       whatsAppMedico: this.converteWhatsApp(this.formEditMedico.value.whatsAppMedico || ''),
     };
 
     console.log("Payload de edição:", payload);
+
+    let endpoint = `http://localhost:8080/api/v1/medicos/editar/${this.formEditMedico.value.idMedico}`;
+
+    this.http.put(endpoint, payload).subscribe({
+      next: (response: any) => {
+        this.mensagemModal.set(response.resposta);
+        this.tipoMensagem.set('success');
+        this.consultarMedicos(0);
+        setTimeout(() => {
+          this.mensagemModal.set('');
+        }, 3000);
+      },
+      error: (e: any) => {
+        this.mensagemModal.set(e.error.message);
+        this.tipoMensagem.set('danger');
+        setTimeout(() => {
+          this.mensagemModal.set('');
+        }, 3000);
+      }
+    });
+  }
+
+  medicoSelecionadoParaDelete: any = null;
+
+  abrirModalConfirmarDelete(medico: any) {
+    this.medicoSelecionadoParaDelete = medico;
+  }
+
+  deletarMedico() {
+    if (!this.medicoSelecionadoParaDelete) {
+      return;
+    }
+    console.log(this.medicoSelecionadoParaDelete);
+
+    const idMedico = this.medicoSelecionadoParaDelete.idMedico;
+
+    let endpoint = `http://localhost:8080/api/v1/medicos/deletar/${idMedico}`;
+
+    this.http.delete(endpoint).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        this.consultarMedicos(this.paginaAtual());
+        this.tipoMensagem.set('success');
+        this.mensagemErroPagPrincipal.set('Médico deletado com sucesso.');
+        this.medicoSelecionadoParaDelete = null;
+      },
+      error: (e: any) => {
+        this.mensagemErroPagPrincipal.set(e.error.message);
+      }
+    });
   }
 }

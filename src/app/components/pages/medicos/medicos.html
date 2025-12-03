@@ -65,17 +65,19 @@
                                 <!-- FOR DINÂMICO AO INICIAR A PÁG:-->
                                 <tr *ngFor="let medico of medicos()">
                                     <td>{{ medico.nomeMedico }}</td>
-                                    <td>{{ medico.cpfMedico }}</td>
+                                    <td>{{ aplicarMascaraCPF(medico.cpfMedico) }}</td>
                                     <td>{{ medico.crmMedico }}</td>
-                                    <td>{{ medico.whatsAppMedico}}</td>
+                                    <td>{{ aplicarMascaraWhats(medico.whatsAppMedico)}}</td>
                                     <td>
-                                        <div class="d-flex justify-content-end gap-2">
+                                        <div style="width: 180px;" class="d-flex gap-2">
                                             <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                                 data-bs-target="#modalEditarMedico" (click)="abrirModalEditar(medico)">
                                                 Editar
                                             </button>
 
-                                            <button class="btn btn-sm btn-outline-danger">
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                data-bs-target="#modalConfirmarDeleteMedico"
+                                                (click)="abrirModalConfirmarDelete(medico)">
                                                 Deletar
                                             </button>
                                         </div>
@@ -88,17 +90,19 @@
                                 <!-- FOR DINÂMICO AO PESQUISAR MEDICO-->
                                 <tr *ngFor="let medico of medicosFounds()">
                                     <td>{{ medico.nomeMedico }}</td>
-                                    <td>{{ medico.cpfMedico }}</td>
+                                    <td>{{ aplicarMascaraCPF(medico.cpfMedico) }}</td>
                                     <td>{{ medico.crmMedico }}</td>
-                                    <td>{{ medico.whatsAppMedico}}</td>
+                                    <td>{{ aplicarMascaraWhats(medico.whatsAppMedico)}}</td>
                                     <td>
-                                        <div class="d-flex justify-content-end gap-2">
+                                        <div class="d-flex gap-2">
                                             <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
                                                 data-bs-target="#modalEditarMedico" (click)="abrirModalEditar(medico)">
                                                 Editar
                                             </button>
 
-                                            <button class="btn btn-sm btn-outline-danger">
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                data-bs-target="#modalConfirmarDeleteMedico"
+                                                (click)="abrirModalConfirmarDelete(medico)">
                                                 Deletar
                                             </button>
                                         </div>
@@ -361,11 +365,49 @@
                         </button>
 
                         <button type="submit" class="btn btn-dark" [disabled]="formEditMedico.invalid">
-                            Salvar
+                            Editar
                         </button>
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------MODAL DE DELETE----------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<div class="modal fade" id="modalConfirmarDeleteMedico" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Cabeçalho -->
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Corpo -->
+            <div class="modal-body">
+                <p>
+                    Tem certeza que deseja excluir o médico
+                    <strong>{{ medicoSelecionadoParaDelete?.nomeMedico }}</strong>?
+                </p>
+                <p class="text-muted mb-0">
+                    Essa ação não poderá ser desfeita.
+                </p>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-danger" (click)="deletarMedico()" data-bs-dismiss="modal">
+                    Excluir
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
