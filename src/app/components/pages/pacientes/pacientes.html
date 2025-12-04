@@ -1,5 +1,6 @@
+<!-- pacientes.html -->
+
 <div class="container-fluid pacientes-page">
-  <!-- TÍTULO + BOTÃO NOVO -->
   <div class="row mb-4">
     <div class="col">
       <h2 class="mb-0">Pacientes</h2>
@@ -7,21 +8,44 @@
     </div>
 
     <div class="col-auto d-flex align-items-center">
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastroPaciente">
+      <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalCadastroPaciente">
         + Novo Paciente
       </button>
-
     </div>
   </div>
 
-  <!-- LISTA DE PACIENTES -->
+  <div *ngIf="mensagemPagPrincipal()!=''" class="alert alert-{{tipoMensagem()}} alert-dismissible fade show">
+      <strong>{{mensagemPagPrincipal()}}</strong>
+      <button type="button" class="btn-close" aria-label="Close" (click)="mensagemPagPrincipal.set('')"></button>
+  </div>
+
   <div class="row">
     <div class="col-12">
       <div class="card">
 
-        <!-- CABEÇALHO DA TABELA AJUSTADO -->
-        <div class="card-header text-center fw-bold fs-5">
-          Pacientes cadastrados
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col text-center">
+              <span class="fw-bold fs-5">Pacientes cadastrados</span>
+            </div>
+
+            <div class="col-auto d-flex align-items-center">
+              <form [formGroup]="formPesquisar" (ngSubmit)="pesquisarPorNome()" class="d-flex">
+                <input type="text" class="form-control search-input" formControlName="nome"
+                  placeholder="Pesquisar por nome...">
+
+                <button type="submit" *ngIf="!ativarBodyPesquisa()" class="sidebar-btn ms-2"
+                        [disabled]="formPesquisar.invalid">
+                  🔍
+                </button>
+              </form>
+
+              <button type="button" *ngIf="ativarBodyPesquisa()" class="sidebar-btn ms-2"
+                      (click)="consultarPacientes(0)">
+                ✖️
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="card-body p-0">
@@ -29,133 +53,214 @@
             <table class="table mb-0 align-middle">
               <thead class="table-light">
                 <tr>
-                  <th>Nome do paciente</th>
+                  <th>Nome</th>
                   <th>CPF</th>
                   <th>Telefone</th>
                   <th>E-mail</th>
-                  <th style="width: 180px;">Ações</th>
+                  <th style="width:180px;">Ações</th>
                 </tr>
               </thead>
 
-              <tbody>
-                <!-- EXEMPLOS ESTÁTICOS -->
-                <tr>
-                  <td>João Pereira</td>
-                  <td>123.456.789-00</td>
-                  <td>(21) 99999-0000</td>
-                  <td>joao.pereira@email.com</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary">
-                        Editar
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger">
-                        Inativar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>Maria Fernanda</td>
-                  <td>987.654.321-00</td>
-                  <td>(21) 98888-1111</td>
-                  <td>maria.fernanda@email.com</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary">
-                        Editar
-                      </button>
-                      <button class="btn btn-sm btn-outline-danger">
-                        Inativar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- QUANDO FOR DINÂMICO:
-                <tr *ngFor="let paciente of pacientes()">
-                  <td>{{ paciente.nome }}</td>
-                  <td>{{ paciente.cpf }}</td>
-                  <td>{{ paciente.telefone }}</td>
-                  <td>{{ paciente.email }}</td>
+              <tbody *ngIf="!ativarBodyPesquisa()">
+                <tr *ngFor="let p of pacientes()">
+                  <td>{{p.nome}}</td>
+                  <td>{{aplicarCPF(p.cpf)}}</td>
+                  <td>{{formatarTel(p.telefone)}}</td>
+                  <td>{{p.email}}</td>
                   <td>
                     <div class="d-flex gap-2">
                       <button class="btn btn-sm btn-outline-secondary"
-                              (click)="editarPaciente(paciente)">
+                              data-bs-toggle="modal" data-bs-target="#modalEditarPaciente"
+                              (click)="abrirEditar(p)">
                         Editar
                       </button>
-                      
                       <button class="btn btn-sm btn-outline-danger"
-                              (click)="desativarPaciente(paciente)">
+                              data-bs-toggle="modal" data-bs-target="#modalDeletePaciente"
+                              (click)="abrirExcluir(p)">
                         Inativar
                       </button>
                     </div>
                   </td>
                 </tr>
-                -->
+              </tbody>
+
+              <tbody *ngIf="ativarBodyPesquisa()">
+                <tr *ngFor="let p of pacientesFound()">
+                  <td>{{p.nome}}</td>
+                  <td>{{aplicarCPF(p.cpf)}}</td>
+                  <td>{{formatarTel(p.telefone)}}</td>
+                  <td>{{p.email}}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary"
+                              data-bs-toggle="modal" data-bs-target="#modalEditarPaciente"
+                              (click)="abrirEditar(p)">
+                        Editar
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger"
+                              data-bs-toggle="modal" data-bs-target="#modalDeletePaciente"
+                              (click)="abrirExcluir(p)">
+                        Inativar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
 
             </table>
           </div>
         </div>
 
+        <nav class="pagination-container" *ngIf="!ativarBodyPesquisa()">
+          <ul class="pagination-dark">
+            <li>
+              <button class="page-btn" [class.disabled]="paginaAtual()==0"
+                      (click)="irParaPagina(paginaAtual()-1)">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+            </li>
+
+            <li *ngFor="let pg of paginasArray()">
+              <button class="page-btn" [class.active]="pg==paginaAtual()"
+                      (click)="irParaPagina(pg)">
+                {{pg+1}}
+              </button>
+            </li>
+
+            <li>
+              <button class="page-btn"
+                      [class.disabled]="paginaAtual()==totalPaginas()-1"
+                      (click)="irParaPagina(paginaAtual()+1)">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL DE CADASTRO DE PACIENTE -->
+<!-- MODAL ADD -->
 <div class="modal fade" id="modalCadastroPaciente" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
-      <!-- Cabeçalho -->
       <div class="modal-header">
-        <h5 class="modal-title">Cadastrar Paciente</h5>
+        <h5 class="modal-title w-100 text-center">Cadastrar Paciente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
-      <!-- Corpo -->
       <div class="modal-body">
-        <form>
+        <form [formGroup]="formAdd" (ngSubmit)="addPaciente()">
 
-          <!-- Nome -->
           <div class="mb-3">
             <label class="form-label">Nome completo</label>
-            <input type="text" class="form-control" placeholder="Ex: João Pereira da Silva">
+            <input class="form-control" formControlName="nome">
           </div>
 
-          <!-- CPF -->
           <div class="mb-3">
             <label class="form-label">CPF</label>
-            <input type="text" class="form-control" placeholder="000.000.000-00">
+            <input class="form-control" formControlName="cpf" mask="000.000.000-00">
           </div>
 
-          <!-- Telefone -->
           <div class="mb-3">
             <label class="form-label">Telefone</label>
-            <input type="text" class="form-control" placeholder="(00) 00000-0000">
+            <input class="form-control" formControlName="telefone" mask="(00)00000-0000||(00)0000-0000">
           </div>
 
-          <!-- E-mail -->
           <div class="mb-3">
             <label class="form-label">E-mail</label>
-            <input type="email" class="form-control" placeholder="email@exemplo.com">
+            <input class="form-control" formControlName="email">
+          </div>
+
+          <div class="alert alert-{{tipoMensagem()}}"
+               *ngIf="mensagemModal()!=''">
+            <strong>{{mensagemModal()}}</strong>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-dark" [disabled]="formAdd.invalid">Salvar</button>
+            <button #btnCloseAdd type="button" class="d-none" data-bs-dismiss="modal"></button>
           </div>
 
         </form>
       </div>
 
-      <!-- Rodapé -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancelar
-        </button>
+    </div>
+  </div>
+</div>
 
-        <button type="button" class="btn btn-primary">
-          Salvar
-        </button>
+<!-- MODAL EDIT -->
+<div class="modal fade" id="modalEditarPaciente" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title w-100 text-center">Editar Paciente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formEdit" (ngSubmit)="editarPaciente()">
+
+          <div class="mb-3">
+            <label class="form-label">Nome completo</label>
+            <input class="form-control" formControlName="nome">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">CPF</label>
+            <input class="form-control" formControlName="cpf" mask="000.000.000-00">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Telefone</label>
+            <input class="form-control" formControlName="telefone" mask="(00)00000-0000||(00)0000-0000">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">E-mail</label>
+            <input class="form-control" formControlName="email">
+          </div>
+
+          <div class="alert alert-{{tipoMensagem()}}"
+               *ngIf="mensagemModal()!=''">
+            {{mensagemModal()}}
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-dark" [disabled]="formEdit.invalid">Editar</button>
+            <button #btnCloseEdit type="button" class="d-none" data-bs-dismiss="modal"></button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="modal fade" id="modalDeletePaciente" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar exclusão</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>Deseja inativar o paciente <strong>{{pacienteSelecionado?.nome}}</strong>?</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" (click)="deletarPaciente()" data-bs-dismiss="modal">Confirmar</button>
       </div>
 
     </div>
