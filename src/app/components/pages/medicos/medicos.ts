@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { ViewChild, ElementRef } from '@angular/core';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-medicos',
@@ -16,7 +18,8 @@ export class Medicos {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
 
-  mensagemErroPagPrincipal = signal<string>('');
+  idClinica: number = 1;
+  mensagemPagPrincipal = signal<string>('');
   mensagemModal = signal<string>('');
   tipoMensagem = signal<string>('');
   paginaAtual = signal<number>(0);        // página começa em 0 (Spring padrão)
@@ -25,16 +28,19 @@ export class Medicos {
   medicosFounds = signal<any[]>([]);
   ativarBodyPesquisa = signal<boolean>(false);
   readonly tamanhoPagina = 10;
+  @ViewChild('btnCloseAddModal')     // fechar modal
+  btnCloseAddModal!: ElementRef<HTMLButtonElement>; // fechar modal
+  @ViewChild('btnCloseEditModal')     // fechar modal
+  btnCloseEditModal!: ElementRef<HTMLButtonElement>; // fechar modal
 
   ngOnInit() {
     this.consultarMedicos(this.paginaAtual());
   }
 
-  idClinica: number = 1;
-  private readonly baseUrl = `http://localhost:8080/api/v1/clinicas/1/medicos`;
+  private readonly baseUrl = `${environment.api.clinicas}`;
 
-  consultarMedicos(page: number) {
-    let endpointConsultar = this.baseUrl + "?page=" + page + "&size=" + this.tamanhoPagina;
+  consultarMedicos(page: number) {    
+    let endpointConsultar = `${this.baseUrl}/${this.idClinica}/medicos?page=${page}&size=${this.tamanhoPagina}`;
     this.http.get(endpointConsultar).subscribe({
       next: (response: any) => {
         this.ativarBodyPesquisa.set(false);
@@ -47,7 +53,7 @@ export class Medicos {
       },
       error: (e: any) => {
         console.log(e.error);
-        this.mensagemErroPagPrincipal.set(e.error.errors);
+        this.mensagemPagPrincipal.set(e.error.errors);
       }
     })
   }
@@ -132,7 +138,8 @@ export class Medicos {
   });
 
   pesquisarPorNome() {
-    let endpoint = `http://localhost:8080/api/v1/medicos?nome=${this.formPesquisarMedico.value.nomeMedico}`;
+    let nome = this.formPesquisarMedico.value.nomeMedico;
+    let endpoint = `${environment.api.medicos}?nome=${nome}`;
 
     if (this.formPesquisarMedico.invalid) {
       this.consultarMedicos(0);
@@ -143,12 +150,12 @@ export class Medicos {
       next: (response: any) => {
         this.medicosFounds.set(response);
         this.ativarBodyPesquisa.set(true);
-        this.mensagemErroPagPrincipal.set('')
+        this.mensagemPagPrincipal.set('')
 
       },
       error: (e: any) => {
         this.medicosFounds.set([]);
-        this.mensagemErroPagPrincipal.set(e.error.message);
+        this.mensagemPagPrincipal.set(e.error.message);
         this.ativarBodyPesquisa.set(true);
         this.tipoMensagem.set("danger");
       }
@@ -182,7 +189,7 @@ export class Medicos {
     }
 
     const payload = {
-      idClinica: 1,
+      idClinica: this.idClinica,
       nomeMedico: this.formAddMedico.value.nomeMedico,
       cpfMedico: this.removeMascaraCPF(this.formAddMedico.value.cpfMedico ?? ''),
       crmMedico: this.formAddMedico.value.crmMedico?.toUpperCase(),
@@ -190,16 +197,17 @@ export class Medicos {
 
     }
 
-    const endpointCadastrar = "http://localhost:8080/api/v1/medicos/cadastrar";
+    const endpoint = `${environment.api.medicos}/cadastrar`;
 
-    this.http.post(endpointCadastrar, payload).subscribe({
+    this.http.post(endpoint, payload).subscribe({
       next: (response: any) => {
         this.tipoMensagem.set("success");
-        this.mensagemModal.set(response.resposta);
+        this.mensagemPagPrincipal.set(response.resposta);
         this.formAddMedico.reset();
         this.consultarMedicos(this.paginaAtual());
+        this.btnCloseAddModal.nativeElement.click();
         setTimeout(() => {
-          this.mensagemModal.set('');
+          this.mensagemPagPrincipal.set('');
         }, 5000);
       },
       error: (e: any) => {
@@ -258,17 +266,16 @@ export class Medicos {
       whatsAppMedico: this.converteWhatsApp(this.formEditMedico.value.whatsAppMedico || ''),
     };
 
-    console.log("Payload de edição:", payload);
-
-    let endpoint = `http://localhost:8080/api/v1/medicos/editar/${this.formEditMedico.value.idMedico}`;
+    let endpoint = `${environment.api.medicos}/editar/${this.formEditMedico.value.idMedico}`;
 
     this.http.put(endpoint, payload).subscribe({
       next: (response: any) => {
-        this.mensagemModal.set(response.resposta);
+        this.mensagemPagPrincipal.set(response.resposta);
         this.tipoMensagem.set('success');
-        this.consultarMedicos(0);
+        this.consultarMedicos(this.paginaAtual());
+        this.btnCloseEditModal.nativeElement.click();
         setTimeout(() => {
-          this.mensagemModal.set('');
+          this.mensagemPagPrincipal.set('');
         }, 3000);
       },
       error: (e: any) => {
@@ -295,18 +302,21 @@ export class Medicos {
 
     const idMedico = this.medicoSelecionadoParaDelete.idMedico;
 
-    let endpoint = `http://localhost:8080/api/v1/medicos/deletar/${idMedico}`;
+    let endpoint = `${environment.api.medicos}/deletar/${idMedico}`;
 
     this.http.delete(endpoint).subscribe({
       next: (response: any) => {
         console.log(response);
         this.consultarMedicos(this.paginaAtual());
         this.tipoMensagem.set('success');
-        this.mensagemErroPagPrincipal.set('Médico deletado com sucesso.');
+        this.mensagemPagPrincipal.set('Médico deletado com sucesso.');
         this.medicoSelecionadoParaDelete = null;
+        setTimeout(() => {
+          this.mensagemPagPrincipal.set('');
+        }, 3000);
       },
       error: (e: any) => {
-        this.mensagemErroPagPrincipal.set(e.error.message);
+        this.mensagemPagPrincipal.set(e.error.message);
       }
     });
   }
