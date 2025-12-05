@@ -1,5 +1,3 @@
-// pacientes.ts
-
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -61,11 +59,11 @@ export class Pacientes {
       });
   }
 
-  totalPaginasArray() { 
-    return Array.from({ length: this.totalPaginas() }, (_, index) => index); 
+  totalPaginasArray() {
+    return Array.from({ length: this.totalPaginas() }, (_, index) => index);
   }
   irParaPagina(page: number) {
-    if (page < 0 || page >= this.totalPaginas()) 
+    if (page < 0 || page >= this.totalPaginas())
       return;
     this.consultarPacientes(page);
   }
@@ -94,32 +92,59 @@ export class Pacientes {
     return resultado;
   }
 
-  aplicarCPF(c: string) { return c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'); }
-  formatarTel(t: string) {
-    const n = t.startsWith('55') ? t.slice(2) : t;
-    return n.length == 10 ? n.replace(/(\d{2})(\d{4})(\d{4})/, '($1)$2-$3')
-      : n.replace(/(\d{2})(\d{5})(\d{4})/, '($1)$2-$3');
+  ///////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////CPF///////////////////////////////////////////
+  public aplicarMascaraCPF(cpf: string): string {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,
+      '$1.$2.$3-$4');
   }
-  limparCPF(c: string) { return c.replace(/\D/g, ''); }
-  limparTel(t: string) { return '55' + t.replace(/\D/g, ''); }
 
+  private removeMascaraCPF(cpf: string): string {
+    return cpf.replace(/\D/g, ''); // remove tudo que não é número
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////WhatsApp//////////////////////////////////////
+  public aplicarMascaraWhats(whats: string): string {
+    // remove o 55
+    const numero = whats.startsWith('55') ? whats.slice(2) : whats;
+
+    if (numero.length === 10) {
+      // ex: 2196525005 → (21)9652-5005
+      return numero.replace(/(\d{2})(\d{4})(\d{4})/,
+        '($1)$2-$3');
+    }
+
+    // ex: 21965250053 → (21)96525-0053
+    return numero.replace(/(\d{2})(\d{5})(\d{4})/,
+      '($1)$2-$3');
+  }
+
+  private converteWhatsApp(whats: string): string {
+    const apenasNumeros = whats.replace(/\D/g, ''); // ex: "21965250053"
+
+    return '55' + apenasNumeros;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////FormilarioPesquisar/MetodosPesquisar//////////////////////////////////////
   formPesquisar = this.fb.group({
     nome: ['', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]]
   });
 
   pesquisarPorNome() {
-    if (this.formPesquisar.invalid) { 
-      this.consultarPacientes(0); 
-      return; 
+    if (this.formPesquisar.invalid) {
+      this.consultarPacientes(0);
+      return;
     }
     this.http.get(`${environment.api.pacientes}?nome=${this.formPesquisar.value.nome}`)
       .subscribe({
         next: (response: any) => {
-          this.pacientesFound.set(response.content); 
-          this.ativarBodyPesquisa.set(true); 
+          this.pacientesFound.set(response.content);
+          this.ativarBodyPesquisa.set(true);
         },
-        error: (e: any) => { 
-          this.tipoMensagem.set('danger'); 
+        error: (e: any) => {
+          this.tipoMensagem.set('danger');
           this.mensagemPagPrincipal.set(e.error.message);
           setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
           this.consultarPacientes(0);
@@ -127,6 +152,8 @@ export class Pacientes {
       });
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////FormilariosADD/MetodosADD//////////////////////////////////////
   formAdd = this.fb.group({
     nome: ['', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]],
     cpf: ['', [Validators.required, Validators.pattern('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')]],
@@ -141,8 +168,8 @@ export class Pacientes {
     const payload = {
       idClinica: this.idClinica,
       nomePaciente: this.formAdd.value.nome?.trim(),
-      cpfPaciente: this.limparCPF(this.formAdd.value.cpf || ''),
-      whatsAppPaciente: this.limparTel(this.formAdd.value.whatsApp || ''),
+      cpfPaciente: this.removeMascaraCPF(this.formAdd.value.cpf || ''),
+      whatsAppPaciente: this.converteWhatsApp(this.formAdd.value.whatsApp || ''),
     };
 
     this.http.post(`${environment.api.pacientes}/cadastrar`, payload)
@@ -163,33 +190,37 @@ export class Pacientes {
       });
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////FormilariosEdit/MetodosEdit//////////////////////////////////////
   formEdit = this.fb.group({
     id: [''],
     nome: ['', [Validators.required]],
     cpf: ['', [Validators.required]],
-    telefone: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]]
+    whatsApp: ['', [Validators.required]],
   });
 
-  abrirEditar(p: any) {
+  abrirEditar(paciente: any) {
     this.formEdit.patchValue({
-      id: p.id,
-      nome: p.nome,
-      cpf: this.aplicarCPF(p.cpf),
-      telefone: this.formatarTel(p.telefone),
-      email: p.email
+      id: paciente.idPaciente,
+      nome: paciente.nomePaciente,
+      cpf: this.aplicarMascaraCPF(paciente.cpfPaciente),
+      whatsApp: this.aplicarMascaraWhats(paciente.whatsAppPaciente),
     });
   }
 
   editarPaciente() {
-    if (this.formEdit.invalid) { this.formEdit.markAllAsTouched(); return; }
+    if (this.formEdit.invalid) { 
+      this.formEdit.markAllAsTouched(); 
+      return; 
+    }
     const id = this.formEdit.value.id;
     const payload = {
-      nome: this.formEdit.value.nome?.trim(),
-      cpf: this.limparCPF(this.formEdit.value.cpf || ''),
-      telefone: this.limparTel(this.formEdit.value.telefone || ''),
-      email: this.formEdit.value.email
+      idPaciente: id,
+      nomePaciente: this.formEdit.value.nome?.trim(),
+      cpfPaciente: this.removeMascaraCPF(this.formEdit.value.cpf || ''),
+      whatsAppPaciente: this.converteWhatsApp(this.formEdit.value.whatsApp || '')
     };
+    console.log(payload);
     this.http.put(`${environment.api.pacientes}/editar/${id}`, payload)
       .subscribe({
         next: (r: any) => {
@@ -199,10 +230,16 @@ export class Pacientes {
           this.btnCloseEdit.nativeElement.click();
           setTimeout(() => this.mensagemPagPrincipal.set(''), 3000);
         },
-        error: (e) => { this.tipoMensagem.set('danger'); this.mensagemModal.set(e.error.message); }
+        error: (e: any) => { 
+          this.tipoMensagem.set('danger'); 
+          this.mensagemModal.set(e.error.message);
+          setTimeout(() => this.mensagemModal.set(''), 4000);
+        }
       });
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////MetodoDelete//////////////////////////////////////////
   abrirExcluir(p: any) { this.pacienteSelecionado = p; }
   deletarPaciente() {
     this.http.delete(`${environment.api.pacientes}/deletar/${this.pacienteSelecionado.id}`)
