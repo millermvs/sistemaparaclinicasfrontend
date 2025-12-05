@@ -152,50 +152,75 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
+      <!-- Cabeçalho -->
       <div class="modal-header">
-        <h5 class="modal-title w-100 text-center">Cadastrar Paciente</h5>
+        <h5 class="modal-title text-center w-100">Cadastrar Paciente</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
+      <!-- Corpo (formulário) -->
       <div class="modal-body">
         <form [formGroup]="formAdd" (ngSubmit)="addPaciente()">
 
+          <!-- Nome -->
           <div class="mb-3">
             <label class="form-label">Nome completo</label>
-            <input class="form-control" formControlName="nome">
+            <input type="text" class="form-control" formControlName="nome"
+              (input)="formAdd.get('nome')?.setValue(capitalizarNome($event.target.value), {emitEvent: false})"
+              [class.is-invalid]="formAdd.get('nome')?.invalid && formAdd.get('nome')?.touched">
+
+            <div class="invalid-feedback"
+              *ngIf="formAdd.get('nome')?.hasError('required') && formAdd.get('nome')?.touched">
+              Nome é obrigatório.
+            </div>
           </div>
 
+          <!-- CPF -->
           <div class="mb-3">
             <label class="form-label">CPF</label>
-            <input class="form-control" formControlName="cpf" mask="000.000.000-00">
+            <input type="text" class="form-control" formControlName="cpf" mask="000.000.000-00"
+              [class.is-invalid]="formAdd.get('cpf')?.invalid && formAdd.get('cpf')?.touched">
+
+            <div class="invalid-feedback"
+              *ngIf="formAdd.get('cpf')?.hasError('required') && formAdd.get('cpf')?.touched">
+              CPF é obrigatório.
+            </div>
           </div>
 
+          <!-- WhatsApp -->
           <div class="mb-3">
-            <label class="form-label">Telefone</label>
-            <input class="form-control" formControlName="telefone" mask="(00)00000-0000||(00)0000-0000">
+            <label class="form-label">WhatsApp</label>
+            <input type="text" class="form-control" formControlName="whatsApp" mask="(00)00000-0000||(00)0000-0000"
+              [class.is-invalid]="formAdd.get('whatsApp')?.invalid && formAdd.get('whatsApp')?.touched">
+
+            <div class="invalid-feedback"
+              *ngIf="formAdd.get('whatsApp')?.hasError('required') && formAdd.get('whatsApp')?.touched">
+              WhatsApp é obrigatório.
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">E-mail</label>
-            <input class="form-control" formControlName="email">
-          </div>
-
-          <div class="alert alert-{{tipoMensagem()}}" *ngIf="mensagemModal()!=''">
+          <!-- Mensagem retorno -->
+          <div [ngClass]="{ 'show': mensagemModal() != '' }"
+            class="alert alert-{{tipoMensagem()}} alert-dismissible fade show" *ngIf="mensagemModal()!=''">
             <strong>{{mensagemModal()}}</strong>
+            <button type="button" class="btn-close" (click)="mensagemModal.set('')"></button>
           </div>
 
+          <!-- Footer -->
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-dark" [disabled]="formAdd.invalid">Salvar</button>
-            <button #btnCloseAdd type="button" class="d-none" data-bs-dismiss="modal"></button>
+            <button type="submit" [disabled]="formAdd.invalid" class="btn btn-dark">Salvar</button>
+
+            <!-- Botão escondido para fechar via TS -->
+            <button #btnCloseAdd type="button" data-bs-dismiss="modal" class="d-none"></button>
           </div>
 
         </form>
       </div>
-
     </div>
   </div>
 </div>
+
 <!-- ----------------------------------------------------------------------------------------------------------- -->
 <!-- ---------------------------------------------MODAL DE EDICAO----------------------------------------------- -->
 <!-- ----------------------------------------------------------------------------------------------------------- -->

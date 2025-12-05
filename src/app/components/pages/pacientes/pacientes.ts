@@ -70,6 +70,30 @@ export class Pacientes {
     this.consultarPacientes(page);
   }
 
+  capitalizarNome(valor: string): string {
+
+    if (!valor) return '';
+
+    // Vê se o usuário colocou espaço no final
+    const terminaComEspaco = valor.endsWith(' ');
+
+    // Normaliza texto
+    valor = valor.trimEnd().toLowerCase();
+
+    // Divide palavras (um ou vários espaços)
+    const palavras = valor
+      .split(/\s+/)
+      .map(p => p.charAt(0).toUpperCase() + p.slice(1));
+
+    let resultado = palavras.join(' ');
+
+    // mantém o espaço no final se o usuário digitou
+    if (terminaComEspaco) {
+      resultado += ' ';
+    }
+    return resultado;
+  }
+
   aplicarCPF(c: string) { return c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'); }
   formatarTel(t: string) {
     const n = t.startsWith('55') ? t.slice(2) : t;
@@ -106,8 +130,7 @@ export class Pacientes {
   formAdd = this.fb.group({
     nome: ['', [Validators.required, Validators.pattern('^[A-Za-zÀ-ÿ\\s]{1,100}$')]],
     cpf: ['', [Validators.required, Validators.pattern('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')]],
-    telefone: ['', [Validators.required, Validators.pattern('^\\(\\d{2}\\)\\d{4,5}-\\d{4}$')]],
-    email: ['', [Validators.required, Validators.email]]
+    whatsApp: ['', [Validators.required, Validators.pattern('^\\(\\d{2}\\)\\d{4,5}-\\d{4}$')]]
   });
 
   addPaciente() {
@@ -117,12 +140,11 @@ export class Pacientes {
     }
     const payload = {
       idClinica: this.idClinica,
-      nomePaciente: this.formAdd.value.nome,
+      nomePaciente: this.formAdd.value.nome?.trim(),
       cpfPaciente: this.limparCPF(this.formAdd.value.cpf || ''),
-      whatsAppPaciente: this.limparTel(this.formAdd.value.telefone || ''),
+      whatsAppPaciente: this.limparTel(this.formAdd.value.whatsApp || ''),
     };
 
-    console.log(payload)
     this.http.post(`${environment.api.pacientes}/cadastrar`, payload)
       .subscribe({
         next: (response: any) => {
