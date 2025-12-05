@@ -15,8 +15,8 @@
   </div>
 
   <div *ngIf="mensagemPagPrincipal()!=''" class="alert alert-{{tipoMensagem()}} alert-dismissible fade show">
-      <strong>{{mensagemPagPrincipal()}}</strong>
-      <button type="button" class="btn-close" aria-label="Close" (click)="mensagemPagPrincipal.set('')"></button>
+    <strong>{{mensagemPagPrincipal()}}</strong>
+    <button type="button" class="btn-close" aria-label="Close" (click)="mensagemPagPrincipal.set('')"></button>
   </div>
 
   <div class="row">
@@ -35,13 +35,13 @@
                   placeholder="Pesquisar por nome...">
 
                 <button type="submit" *ngIf="!ativarBodyPesquisa()" class="sidebar-btn ms-2"
-                        [disabled]="formPesquisar.invalid">
+                  [disabled]="formPesquisar.invalid">
                   🔍
                 </button>
               </form>
 
               <button type="button" *ngIf="ativarBodyPesquisa()" class="sidebar-btn ms-2"
-                      (click)="consultarPacientes(0)">
+                (click)="consultarPacientes(0)">
                 ✖️
               </button>
             </div>
@@ -55,28 +55,26 @@
                 <tr>
                   <th>Nome</th>
                   <th>CPF</th>
-                  <th>Telefone</th>
+                  <th>WhatsApp</th>
                   <th>E-mail</th>
                   <th style="width:180px;">Ações</th>
                 </tr>
               </thead>
 
               <tbody *ngIf="!ativarBodyPesquisa()">
-                <tr *ngFor="let p of pacientes()">
-                  <td>{{p.nome}}</td>
-                  <td>{{aplicarCPF(p.cpf)}}</td>
-                  <td>{{formatarTel(p.telefone)}}</td>
-                  <td>{{p.email}}</td>
+                <tr *ngFor="let paciente of pacientes()">
+                  <td>{{paciente.nomePaciente}}</td>
+                  <td>{{aplicarCPF(paciente.cpfPaciente)}}</td>
+                  <td>{{formatarTel(paciente.whatsAppPaciente)}}</td>
+                  <td>{{paciente.email}}</td>
                   <td>
                     <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary"
-                              data-bs-toggle="modal" data-bs-target="#modalEditarPaciente"
-                              (click)="abrirEditar(p)">
+                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#modalEditarPaciente" (click)="abrirEditar(paciente)">
                         Editar
                       </button>
-                      <button class="btn btn-sm btn-outline-danger"
-                              data-bs-toggle="modal" data-bs-target="#modalDeletePaciente"
-                              (click)="abrirExcluir(p)">
+                      <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#modalDeletePaciente" (click)="abrirExcluir(paciente)">
                         Inativar
                       </button>
                     </div>
@@ -85,21 +83,19 @@
               </tbody>
 
               <tbody *ngIf="ativarBodyPesquisa()">
-                <tr *ngFor="let p of pacientesFound()">
-                  <td>{{p.nome}}</td>
-                  <td>{{aplicarCPF(p.cpf)}}</td>
-                  <td>{{formatarTel(p.telefone)}}</td>
-                  <td>{{p.email}}</td>
+                <tr *ngFor="let paciente of pacientesFound()">
+                  <td>{{paciente.nomePaciente}}</td>
+                  <td>{{aplicarCPF(paciente.cpfPaciente)}}</td>
+                  <td>{{formatarTel(paciente.whatsAppPaciente)}}</td>
+                  <td>{{paciente.email}}</td>
                   <td>
                     <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary"
-                              data-bs-toggle="modal" data-bs-target="#modalEditarPaciente"
-                              (click)="abrirEditar(p)">
+                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#modalEditarPaciente" (click)="abrirEditar(paciente)">
                         Editar
                       </button>
-                      <button class="btn btn-sm btn-outline-danger"
-                              data-bs-toggle="modal" data-bs-target="#modalDeletePaciente"
-                              (click)="abrirExcluir(p)">
+                      <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#modalDeletePaciente" (click)="abrirExcluir(paciente)">
                         Inativar
                       </button>
                     </div>
@@ -114,23 +110,20 @@
         <nav class="pagination-container" *ngIf="!ativarBodyPesquisa()">
           <ul class="pagination-dark">
             <li>
-              <button class="page-btn" [class.disabled]="paginaAtual()==0"
-                      (click)="irParaPagina(paginaAtual()-1)">
+              <button class="page-btn" [class.disabled]="paginaAtual()===0" (click)="irParaPagina(paginaAtual()-1)">
                 <i class="bi bi-chevron-left"></i>
               </button>
             </li>
 
             <li *ngFor="let pg of paginasArray()">
-              <button class="page-btn" [class.active]="pg==paginaAtual()"
-                      (click)="irParaPagina(pg)">
+              <button class="page-btn" [class.active]="pg===paginaAtual()" (click)="irParaPagina(pg)">
                 {{pg+1}}
               </button>
             </li>
 
             <li>
-              <button class="page-btn"
-                      [class.disabled]="paginaAtual()==totalPaginas()-1"
-                      (click)="irParaPagina(paginaAtual()+1)">
+              <button class="page-btn" [class.disabled]="paginaAtual() === totalPaginas() - 1"
+                (click)="irParaPagina(paginaAtual() + 1)">
                 <i class="bi bi-chevron-right"></i>
               </button>
             </li>
@@ -175,8 +168,7 @@
             <input class="form-control" formControlName="email">
           </div>
 
-          <div class="alert alert-{{tipoMensagem()}}"
-               *ngIf="mensagemModal()!=''">
+          <div class="alert alert-{{tipoMensagem()}}" *ngIf="mensagemModal()!=''">
             <strong>{{mensagemModal()}}</strong>
           </div>
 
@@ -226,8 +218,7 @@
             <input class="form-control" formControlName="email">
           </div>
 
-          <div class="alert alert-{{tipoMensagem()}}"
-               *ngIf="mensagemModal()!=''">
+          <div class="alert alert-{{tipoMensagem()}}" *ngIf="mensagemModal()!=''">
             {{mensagemModal()}}
           </div>
 

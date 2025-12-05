@@ -33,31 +33,41 @@ export class Pacientes {
   tamanhoPagina = 10;
 
   pacienteSelecionado: any = null;
+  idClinica = 1;
 
   @ViewChild('btnCloseAdd') btnCloseAdd!: ElementRef<HTMLButtonElement>;
   @ViewChild('btnCloseEdit') btnCloseEdit!: ElementRef<HTMLButtonElement>;
 
-  ngOnInit() { 
-    //this.consultarPacientes(this.paginaAtual()); 
+  ngOnInit() {
+    this.consultarPacientes(this.paginaAtual());
   }
 
-  baseUrl = `${environment.api.clinicas}/1/pacientes`;
+  baseUrl = `${environment.api.clinicas}/${this.idClinica}`;
 
-  consultarPacientes(pg: number) {
-    this.http.get(`${this.baseUrl}?page=${pg}&size=${this.tamanhoPagina}`)
-      .subscribe((res: any) => {
-        this.ativarBodyPesquisa.set(false);
-        this.formPesquisar.get('nome')?.setValue('');
-        this.pacientes.set(res.content);
-        this.paginaAtual.set(res.number);
-        this.totalPaginas.set(res.totalPages);
+  consultarPacientes(page: number) {
+    this.http.get(`${this.baseUrl}/pacientes?page=${page}&size=${this.tamanhoPagina}`)
+      .subscribe({
+        next: (response: any) => {
+          this.ativarBodyPesquisa.set(false);
+          this.formPesquisar.get('nome')?.setValue('');
+          this.pacientes.set(response.content);
+          this.paginaAtual.set(response.number);
+          this.totalPaginas.set(response.totalPages);
+        },
+        error: (e: any) => {
+          this.mensagemPagPrincipal.set(e.error.type);
+          this.tipoMensagem.set('danger');
+        }
       });
   }
 
-  paginasArray() { return Array.from({ length: this.totalPaginas() }, (_, i) => i); }
-  irParaPagina(pg: number) {
-    if (pg < 0 || pg >= this.totalPaginas()) return;
-    this.consultarPacientes(pg);
+  paginasArray() { 
+    return Array.from({ length: this.totalPaginas() }, (_, index) => index); 
+  }
+  irParaPagina(page: number) {
+    if (page < 0 || page >= this.totalPaginas()) 
+      return;
+    this.consultarPacientes(page);
   }
 
   aplicarCPF(c: string) { return c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'); }
@@ -90,11 +100,12 @@ export class Pacientes {
   });
 
   addPaciente() {
-    if (this.formAdd.invalid) { 
-      this.formAdd.markAllAsTouched(); 
-      return; 
+    if (this.formAdd.invalid) {
+      this.formAdd.markAllAsTouched();
+      return;
     }
     const payload = {
+      idClinica: this.idClinica,
       nomePaciente: this.formAdd.value.nome,
       cpfPaciente: this.limparCPF(this.formAdd.value.cpf || ''),
       whatsAppPaciente: this.limparTel(this.formAdd.value.telefone || ''),
@@ -111,10 +122,10 @@ export class Pacientes {
           this.btnCloseAdd.nativeElement.click();
           setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
         },
-        error: (e) => { 
-          this.tipoMensagem.set('danger'); 
+        error: (e) => {
+          this.tipoMensagem.set('danger');
           this.mensagemModal.set(e.error.message);
-          setTimeout(() => this.mensagemModal.set(''), 4000); 
+          setTimeout(() => this.mensagemModal.set(''), 4000);
         }
       });
   }
