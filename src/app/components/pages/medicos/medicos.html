@@ -50,10 +50,12 @@
                     </div>
                 </div>
 
+                <!-- TABELA -->
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table mb-0 align-middle">
                             <thead class="table-light">
+                                <!-- TITULO DA TABELA -->
                                 <tr>
                                     <th>Nome do médico</th>
                                     <th>CPF</th>
@@ -63,6 +65,7 @@
                                 </tr>
                             </thead>
 
+                            <!-- CORPO DA TABELA -->
                             <tbody *ngIf="ativarBodyPesquisa()==false">
                                 <!-- FOR DINÂMICO AO INICIAR A PÁG:-->
                                 <tr *ngFor="let medico of medicos()">

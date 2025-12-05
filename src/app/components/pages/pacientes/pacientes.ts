@@ -61,7 +61,7 @@ export class Pacientes {
       });
   }
 
-  paginasArray() { 
+  totalPaginasArray() { 
     return Array.from({ length: this.totalPaginas() }, (_, index) => index); 
   }
   irParaPagina(page: number) {
@@ -84,11 +84,22 @@ export class Pacientes {
   });
 
   pesquisarPorNome() {
-    if (this.formPesquisar.invalid) { this.consultarPacientes(0); return; }
+    if (this.formPesquisar.invalid) { 
+      this.consultarPacientes(0); 
+      return; 
+    }
     this.http.get(`${environment.api.pacientes}?nome=${this.formPesquisar.value.nome}`)
       .subscribe({
-        next: (r: any) => { this.pacientesFound.set(r); this.ativarBodyPesquisa.set(true); },
-        error: (e) => { this.tipoMensagem.set('danger'); this.mensagemPagPrincipal.set(e.error.message); }
+        next: (response: any) => {
+          this.pacientesFound.set(response.content); 
+          this.ativarBodyPesquisa.set(true); 
+        },
+        error: (e: any) => { 
+          this.tipoMensagem.set('danger'); 
+          this.mensagemPagPrincipal.set(e.error.message);
+          setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+          this.consultarPacientes(0);
+        }
       });
   }
 

@@ -18,17 +18,19 @@
     <strong>{{mensagemPagPrincipal()}}</strong>
     <button type="button" class="btn-close" aria-label="Close" (click)="mensagemPagPrincipal.set('')"></button>
   </div>
-
+  <!-- LISTA DE PACIENTES -->
   <div class="row">
     <div class="col-12">
       <div class="card">
 
         <div class="card-header">
           <div class="row align-items-center">
+            <!-- Título centralizado -->
             <div class="col text-center">
               <span class="fw-bold fs-5">Pacientes cadastrados</span>
             </div>
 
+            <!-- Campo de pesquisa -->
             <div class="col-auto d-flex align-items-center">
               <form [formGroup]="formPesquisar" (ngSubmit)="pesquisarPorNome()" class="d-flex">
                 <input type="text" class="form-control search-input" formControlName="nome"
@@ -48,10 +50,12 @@
           </div>
         </div>
 
+        <!-- TABELA -->
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table mb-0 align-middle">
               <thead class="table-light">
+                <!-- TITULO DA TABELA -->
                 <tr>
                   <th>Nome</th>
                   <th>CPF</th>
@@ -61,7 +65,9 @@
                 </tr>
               </thead>
 
+              <!-- CORPO DA TABELA -->
               <tbody *ngIf="!ativarBodyPesquisa()">
+                <!-- FOR DINÂMICO AO INICIAR A PÁG:-->
                 <tr *ngFor="let paciente of pacientes()">
                   <td>{{paciente.nomePaciente}}</td>
                   <td>{{aplicarCPF(paciente.cpfPaciente)}}</td>
@@ -83,6 +89,7 @@
               </tbody>
 
               <tbody *ngIf="ativarBodyPesquisa()">
+                <!-- FOR DINÂMICO AO PESQUISAR PACIENTE-->
                 <tr *ngFor="let paciente of pacientesFound()">
                   <td>{{paciente.nomePaciente}}</td>
                   <td>{{aplicarCPF(paciente.cpfPaciente)}}</td>
@@ -107,20 +114,25 @@
           </div>
         </div>
 
-        <nav class="pagination-container" *ngIf="!ativarBodyPesquisa()">
+        <!-- PAGINAÇÃO DARK PREMIUM -->
+        <nav class="pagination-container" *ngIf="ativarBodyPesquisa()==false">
           <ul class="pagination-dark">
+
+            <!-- Botão Anterior -->
             <li>
-              <button class="page-btn" [class.disabled]="paginaAtual()===0" (click)="irParaPagina(paginaAtual()-1)">
+              <button class="page-btn" [class.disabled]="paginaAtual() === 0" (click)="irParaPagina(paginaAtual() - 1)">
                 <i class="bi bi-chevron-left"></i>
               </button>
             </li>
 
-            <li *ngFor="let pg of paginasArray()">
-              <button class="page-btn" [class.active]="pg===paginaAtual()" (click)="irParaPagina(pg)">
-                {{pg+1}}
+            <!-- Números -->
+            <li *ngFor="let page of totalPaginasArray()">
+              <button class="page-btn" [class.active]="page === paginaAtual()" (click)="irParaPagina(page)">
+                {{ page + 1 }}
               </button>
             </li>
 
+            <!-- Botão Próximo -->
             <li>
               <button class="page-btn" [class.disabled]="paginaAtual() === totalPaginas() - 1"
                 (click)="irParaPagina(paginaAtual() + 1)">
@@ -129,13 +141,13 @@
             </li>
           </ul>
         </nav>
-
       </div>
     </div>
   </div>
 </div>
-
-<!-- MODAL ADD -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------MODAL DE CADASTRO--------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
 <div class="modal fade" id="modalCadastroPaciente" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -184,8 +196,9 @@
     </div>
   </div>
 </div>
-
-<!-- MODAL EDIT -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------MODAL DE EDICAO----------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
 <div class="modal fade" id="modalEditarPaciente" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -234,8 +247,9 @@
     </div>
   </div>
 </div>
-
-<!-- MODAL DELETE -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------MODAL DE DELETE----------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
 <div class="modal fade" id="modalDeletePaciente" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
