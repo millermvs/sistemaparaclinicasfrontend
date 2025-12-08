@@ -209,9 +209,9 @@ export class Pacientes {
   }
 
   editarPaciente() {
-    if (this.formEdit.invalid) { 
-      this.formEdit.markAllAsTouched(); 
-      return; 
+    if (this.formEdit.invalid) {
+      this.formEdit.markAllAsTouched();
+      return;
     }
     const id = this.formEdit.value.id;
     const payload = {
@@ -230,8 +230,8 @@ export class Pacientes {
           this.btnCloseEdit.nativeElement.click();
           setTimeout(() => this.mensagemPagPrincipal.set(''), 3000);
         },
-        error: (e: any) => { 
-          this.tipoMensagem.set('danger'); 
+        error: (e: any) => {
+          this.tipoMensagem.set('danger');
           this.mensagemModal.set(e.error.message);
           setTimeout(() => this.mensagemModal.set(''), 4000);
         }
@@ -240,14 +240,21 @@ export class Pacientes {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////MetodoDelete//////////////////////////////////////////
-  abrirExcluir(p: any) { this.pacienteSelecionado = p; }
-  deletarPaciente() {
+  abrirEnviarMsg(paciente: any) {
+    this.pacienteSelecionado = paciente;
+  }
+  EnviarMensagemPaciente() {
     this.http.delete(`${environment.api.pacientes}/deletar/${this.pacienteSelecionado.id}`)
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.consultarPacientes(this.paginaAtual());
           this.mensagemPagPrincipal.set("Paciente inativado com sucesso.");
           setTimeout(() => this.mensagemPagPrincipal.set(''), 3000);
+        },
+        error: (e: any) => {
+          this.tipoMensagem.set('danger');
+          this.mensagemPagPrincipal.set(e.error.errors);
+          setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
         }
       });
   }

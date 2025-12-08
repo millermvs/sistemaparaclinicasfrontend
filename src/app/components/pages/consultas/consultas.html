@@ -7,65 +7,75 @@
         </div>
 
         <div class="col-auto d-flex align-items-center">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCadastroConsulta">
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalCadastroConsulta">
                 + Nova Consulta
             </button>
-
         </div>
     </div>
 
-    <div class="card-body">
-        <!-- FILTRO POR PERÍODO -->
-        <form class="row g-3 align-items-end justify-content-center text-center mb-3">
+    <!-- CARD DE FILTRO -->
+    <div class="card mb-4">
+        <div class="card-header text-center">
+            <span class="fw-bold fs-5">Filtrar consultas</span>
+        </div>
 
-            <!-- DATA INÍCIO -->
-            <div class="col-12 col-sm-4 col-md-3">
-                <label for="dataInicio" class="form-label">Data início</label>
-                <input type="date" id="dataInicio" class="form-control" />
-            </div>
+        <div class="card-body">
+            <!-- FILTRO POR PERÍODO -->
+            <form class="row g-3 align-items-end justify-content-center text-center mb-3">
 
-            <!-- DATA FIM -->
-            <div class="col-12 col-sm-4 col-md-3">
-                <label for="dataFim" class="form-label">Data fim</label>
-                <input type="date" id="dataFim" class="form-control" />
-            </div>
+                <!-- DATA INÍCIO -->
+                <div class="col-12 col-sm-4 col-md-3">
+                    <label for="dataInicio" class="form-label">Data início</label>
+                    <input type="date" id="dataInicio" class="form-control" />
+                </div>
 
-            <!-- MÉDICO -->
-            <div class="col-12 col-sm-4 col-md-3">
-                <label for="medicoSelect" class="form-label">Médico</label>
-                <select id="medicoSelect" class="form-select">
-                    <option value="" selected>Selecione um médico</option>
+                <!-- DATA FIM -->
+                <div class="col-12 col-sm-4 col-md-3">
+                    <label for="dataFim" class="form-label">Data fim</label>
+                    <input type="date" id="dataFim" class="form-control" />
+                </div>
 
-                    <!-- Exemplo estático -->
-                    <option>Dr. João da Silva</option>
-                    <option>Dra. Ana Paula</option>
-                    <option>Dr. Pedro Albuquerque</option>
-                    <option>Dra. Beatriz Nogueira</option>
+                <!-- MÉDICO -->
+                <div class="col-12 col-sm-4 col-md-3">
+                    <label for="medicoSelect" class="form-label">Médico</label>
+                    <select id="medicoSelect" class="form-select">
+                        <option value="" selected>Selecione um médico</option>
 
-                    <!-- Depois ficará assim:
+                        <!-- Exemplo estático -->
+                        <option>Dr. João da Silva</option>
+                        <option>Dra. Ana Paula</option>
+                        <option>Dr. Pedro Albuquerque</option>
+                        <option>Dra. Beatriz Nogueira</option>
+
+                        <!-- Depois ficará assim:
       <option *ngFor="let m of medicos()"
               [value]="m.id">
         {{ m.nome }}
       </option>
       -->
-                </select>
-            </div>
+                    </select>
+                </div>
 
-            <!-- BOTÕES -->
-            <div class="col-12 col-sm-4 col-md-3 d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-primary mt-4">
-                    Filtrar
-                </button>
+                <!-- BOTÕES -->
+                <div class="col-12 col-sm-4 col-md-3 d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-dark mt-4">
+                        Filtrar
+                    </button>
 
-                <button type="button" class="btn btn-outline-secondary mt-4">
-                    Limpar
-                </button>
-            </div>
+                    <button type="button" class="btn btn-outline-secondary mt-4">
+                        Limpar
+                    </button>
+                </div>
 
-        </form>
-
+            </form>
+        </div>
     </div>
 
+    <!-- Mensagem de alerta -->
+    <div *ngIf="mensagemPagPrincipal()!=''" class="alert alert-{{tipoMensagem()}} alert-dismissible fade show">
+        <strong>{{mensagemPagPrincipal()}}</strong>
+        <button type="button" class="btn-close" aria-label="Close" (click)="mensagemPagPrincipal.set('')"></button>
+    </div>
 
     <!-- LISTA DE CONSULTAS -->
     <div class="row">
@@ -236,7 +246,7 @@
 </div>
 
 <!-- MODAL DE CADASTRO DE CONSULTA -->
-<div class="modal fade" id="modalCadastroConsulta" tabindex="-1">
+<div class="modal fade" id="modalCadastroConsulta" tabindex="-1" (hidden.bs.modal)="limparModal()">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -248,74 +258,131 @@
 
             <!-- Corpo -->
             <div class="modal-body">
-                <form>
+                <!-- Agora o form da consulta está reativo -->
+                <form [formGroup]="formCadastroConsulta">
 
                     <!-- Médico -->
                     <div class="mb-3">
                         <label class="form-label">Médico</label>
-                        <select class="form-select">
-                            <option selected disabled>Selecione um médico</option>
+                        <select class="form-select" formControlName="idMedico"
+                            [class.is-invalid]="formCadastroConsulta.get('idMedico')?.invalid && formCadastroConsulta.get('idMedico')?.touched">
 
-                            <!-- Exemplo estático (substituir por *ngFor futuramente) -->
-                            <option>Dr. João da Silva</option>
-                            <option>Dra. Ana Paula</option>
-                            <option>Dr. Pedro Albuquerque</option>
-                            <option>Dra. Beatriz Nogueira</option>
+                            <option value="" disabled>Selecione um médico</option>
+
+                            <option *ngFor="let m of medicosModal()" [value]="m.idMedico">
+                                {{ m.nomeMedico }}
+                            </option>
                         </select>
+
+                        <div class="invalid-feedback"
+                            *ngIf="formCadastroConsulta.get('idMedico')?.hasError('required') && formCadastroConsulta.get('idMedico')?.touched">
+                            Médico é obrigatório.
+                        </div>
                     </div>
 
                     <!-- Paciente -->
                     <div class="mb-3">
                         <label class="form-label">Paciente</label>
-                        <select class="form-select">
-                            <option selected disabled>Selecione um paciente</option>
 
-                            <!-- Exemplo estático -->
-                            <option>Maria Fernanda</option>
-                            <option>João Pereira</option>
-                            <option>Laura Martins</option>
-                            <option>Carlos Eduardo</option>
+                        <!-- "Form" de busca de paciente, mas usando [formGroup] em vez de [formControl] -->
+                        <div [formGroup]="formBuscarPacienteModal" class="d-flex gap-2 mb-2">
+                            <input type="text" class="form-control" placeholder="Digite o nome do paciente"
+                                formControlName="nomePaciente">
+
+                            <button type="button" class="btn btn-dark" (click)="buscarPacientesModal()"
+                                [disabled]="formBuscarPacienteModal.invalid">
+                                Buscar
+                            </button>
+                        </div>
+
+                        <!-- Select preenchido com o resultado da busca -->
+                        <select class="form-select" formControlName="idPaciente"
+                            [class.is-invalid]="formCadastroConsulta.get('idPaciente')?.invalid && formCadastroConsulta.get('idPaciente')?.touched">
+                            <option value="" disabled>Selecione um paciente</option>
+
+                            <option *ngFor="let p of pacientesModal()" [value]="p.idPaciente">
+                                {{ p.nomePaciente }} - {{ aplicarMascaraCPF(p.cpfPaciente) }}
+                            </option>
                         </select>
+
+                        <div class="invalid-feedback"
+                            *ngIf="formCadastroConsulta.get('idPaciente')?.hasError('required') && formCadastroConsulta.get('idPaciente')?.touched">
+                            Paciente é obrigatório.
+                        </div>
+
+                        <div class="form-text">
+                            Digite parte do nome e clique em <strong>Buscar</strong>.
+                        </div>
                     </div>
 
                     <!-- Data -->
                     <div class="mb-3">
                         <label class="form-label">Data da consulta</label>
-                        <input type="date" class="form-control">
+                        <input type="date" class="form-control" formControlName="dataConsulta" [min]="hoje"
+                            [class.is-invalid]="formCadastroConsulta.get('dataConsulta')?.invalid && formCadastroConsulta.get('dataConsulta')?.touched">
+
+                        <div class="invalid-feedback"
+                            *ngIf="formCadastroConsulta.get('dataConsulta')?.hasError('required') && formCadastroConsulta.get('dataConsulta')?.touched">
+                            Data da consulta é obrigatória.
+                        </div>
                     </div>
 
                     <!-- Hora -->
                     <div class="mb-3">
                         <label class="form-label">Hora da consulta</label>
-                        <input type="time" class="form-control">
+                        <select class="form-select" formControlName="horaConsulta"
+                            [class.is-invalid]="formCadastroConsulta.get('horaConsulta')?.invalid && formCadastroConsulta.get('horaConsulta')?.touched">
+                            <option value="" disabled>Selecione o horário</option>
+
+                            <option *ngFor="let hora of horariosDisponiveis">
+                                {{ hora }}
+                            </option>
+                        </select>
+
+                        <div class="invalid-feedback"
+                            *ngIf="formCadastroConsulta.get('horaConsulta')?.hasError('required') && formCadastroConsulta.get('horaConsulta')?.touched">
+                            Hora da consulta é obrigatória.
+                        </div>
                     </div>
 
-                    <!-- Tipo de consulta (opcional) -->
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de consulta</label>
-                        <select class="form-select">
-                            <option selected disabled>Selecione o tipo</option>
-                            <option>Retorno</option>
-                            <option>Avaliação</option>
-                            <option>Primeira consulta</option>
-                            <option>Rotina</option>
-                        </select>
-                    </div>
+                    <!-- Tipo de consulta (opcional)
+          <div class="mb-3">
+            <label class="form-label">Tipo de consulta</label>
+            <select class="form-select" formControlName="tipoConsulta">
+              <option value="" selected disabled>Selecione o tipo</option>
+              <option>Retorno</option>
+              <option>Avaliação</option>
+              <option>Primeira consulta</option>
+              <option>Rotina</option>
+            </select>
+          </div>
+          -->
 
                 </form>
+
+                <!-- Mensagem retorno -->
+            <div [ngClass]="{ 'show': mensagemModal() != '' }"
+                class="alert alert-{{ tipoMensagem() }} alert-dismissible fade show" *ngIf="mensagemModal() != ''">
+                <strong>{{ mensagemModal() }}</strong>
+                <button type="button" class="btn-close" aria-label="Close" (click)="mensagemModal.set('')"></button>
+            </div>
+
             </div>
 
             <!-- Rodapé -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-danger mt-4" data-bs-dismiss="modal">
                     Cancelar
                 </button>
 
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-dark mt-4" (click)="salvarConsulta()"
+                    [disabled]="formCadastroConsulta.invalid">
                     Salvar
                 </button>
-            </div>
 
+                <!-- Botão escondido só para fechar via TS -->
+                <button #btnCloseSalvar type="button" class="d-none" data-bs-dismiss="modal"></button>
+            </div>
         </div>
     </div>
 </div>

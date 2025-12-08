@@ -52,8 +52,8 @@ export class Medicos {
         this.totalPaginas.set(response.totalPages);
       },
       error: (e: any) => {
-        console.log(e.error);
-        this.mensagemPagPrincipal.set(e.error.errors);
+        this.tipoMensagem.set('danger')
+        this.mensagemPagPrincipal.set(e.error.type);
       }
     })
   }
