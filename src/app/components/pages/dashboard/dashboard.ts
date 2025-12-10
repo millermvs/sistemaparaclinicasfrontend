@@ -3,10 +3,11 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 import { Navbar } from '../../shared/navbar/navbar';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterOutlet, Navbar, RouterLink],
+  imports: [RouterOutlet, Navbar, RouterLink, CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -19,10 +20,10 @@ export class Dashboard {
   totalPacientes = signal<number>(0);
   totalConsultasHoje = signal<number>(0);
   totalConsultasMes = signal<number>(0);
-  mensagemMedico = signal<string>('');
-  mensagemPaciente = signal<string>('');
-  mensagemConsultaHoje = signal<string>('');
-  mensagemConsultaMes = signal<string>('');
+  mensagemMedicos = signal<string>('');
+  mensagemPacientes = signal<string>('');
+  mensagemConsultasHoje = signal<string>('');
+  mensagemConsultasMes = signal<string>('');
   hoje = new Date();
   dataHoje = `${this.hoje.getFullYear()}-${String(this.hoje.getMonth() + 1).padStart(2, '0')}-${String(this.hoje.getDate()).padStart(2, '0')}`;
 
@@ -45,7 +46,7 @@ export class Dashboard {
         this.totalMedicos.set(response.totalElements);
       },
       error: (e: any) => {
-        this.mensagemMedico.set(e.error.errors);
+        this.mensagemMedicos.set(e.error.message || 'erro ao consultar médicos.');
       }
     });
   }
@@ -59,7 +60,7 @@ export class Dashboard {
         this.totalPacientes.set(response.totalElements);
       },
       error: (e: any) => {
-        this.mensagemPaciente.set(e.error.errors);
+        this.mensagemPacientes.set(e.error.message || 'erro ao consultar pacientes.');
       }
     });
   }
@@ -76,29 +77,25 @@ export class Dashboard {
           this.totalConsultasHoje.set(response.totalElements);
         },
         error: (e: any) => {
-          console.log(e)
-          this.mensagemConsultaHoje.set(e.error.errors);
+          this.mensagemConsultasHoje.set(e.error.message + ' para hoje.' || 'erro ao consultar dados das consultas diárias.');
         }
       });
   }
 
   private endpointBaseConsultasMes = `${environment.api.consultas}/datas`;
- 
-   buscarConsultasMes() {
-     const url =
-       `${this.endpointBaseConsultasMes}/${this.primeiroDia}/${this.ultimoDia}?page=0&size=1`;
- 
-     this.http.get(url)
-       .subscribe({
-         next: (response: any) => {
-           this.totalConsultasMes.set(response.totalElements);
-         },
-         error: (e: any) => {
-           this.mensagemConsultaMes.set(e.error.errors);
-         }
-       });
-   }
 
+  buscarConsultasMes() {
+    const url =
+      `${this.endpointBaseConsultasMes}/${this.primeiroDia}/${this.ultimoDia}?page=0&size=1`;
 
-
+    this.http.get(url)
+      .subscribe({
+        next: (response: any) => {
+          this.totalConsultasMes.set(response.totalElements);
+        },
+        error: (e: any) => {
+          this.mensagemConsultasMes.set(e.error.message + ' para este mês.' || 'erro ao consultar dados das consultas mensais.');
+        }
+      });
+  }
 }

@@ -7,6 +7,32 @@
     </div>
   </div>
 
+  <!-- Mensagem de alerta -->
+  <div
+    *ngIf="mensagemMedicos()!='' || mensagemPacientes()!='' || mensagemConsultasHoje()!='' || mensagemConsultasMes()!=''"
+    class="alert alert-danger alert-dismissible fade show">
+    <strong>
+      <div *ngIf="mensagemMedicos()!=''">
+        {{mensagemMedicos()}}
+      </div>
+      <div *ngIf="mensagemPacientes()!=''">
+        {{mensagemPacientes()}}
+      </div>
+      <div *ngIf="mensagemConsultasHoje()!=''">
+        {{mensagemConsultasHoje()}}
+      </div>
+      <div *ngIf="mensagemConsultasMes()!=''">
+        {{mensagemConsultasMes()}}
+      </div>
+    </strong>
+    <button type="button" class="btn-close" aria-label="Close"
+      (click)="mensagemPacientes.set(''); 
+      mensagemMedicos.set(''); 
+      mensagemConsultasMes.set(''); 
+      mensagemConsultasHoje.set('')">
+    </button>
+  </div>
+
   <!-- CARDS SUPERIORES -->
   <div class="row g-3">
     <!-- Médicos -->
@@ -98,4 +124,3 @@
     </div>
   </div>
 </div>
-

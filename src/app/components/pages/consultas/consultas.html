@@ -21,40 +21,41 @@
 
     <div class="card-body">
       <!-- FILTRO POR PERÍODO (ainda não ligado no TS, foco agora é paginação) -->
-      <form class="row g-3 align-items-end justify-content-center text-center mb-3">
+      <form [formGroup]="formBuscarConsultasPorDatas" (ngSubmit)="buscarConsultas(0)"
+        class="row g-3 align-items-end justify-content-center text-center mb-3">
         <!-- DATA INÍCIO -->
         <div class="col-12 col-sm-4 col-md-3">
           <label for="dataInicio" class="form-label">Data início</label>
-          <input type="date" id="dataInicio" class="form-control" />
+          <input type="date" id="dataInicio" class="form-control" formControlName="dataInicio" />
         </div>
 
         <!-- DATA FIM -->
         <div class="col-12 col-sm-4 col-md-3">
           <label for="dataFim" class="form-label">Data fim</label>
-          <input type="date" id="dataFim" class="form-control" />
+          <input type="date" id="dataFim" class="form-control" formControlName="dataFim"
+            [min]="formBuscarConsultasPorDatas.get('dataInicio')?.value" />
         </div>
 
         <!-- MÉDICO -->
         <div class="col-12 col-sm-4 col-md-3">
-          <label for="medicoSelect" class="form-label">Médico</label>
-          <select id="medicoSelect" class="form-select">
-            <option value="" selected>Selecione um médico</option>
+          <label class="form-label">Médico</label>
+          <select class="form-select" formControlName="idMedico">
 
-            <!-- Exemplo estático por enquanto -->
-            <option>Dr. João da Silva</option>
-            <option>Dra. Ana Paula</option>
-            <option>Dr. Pedro Albuquerque</option>
-            <option>Dra. Beatriz Nogueira</option>
+            <option value='' disabled>Selecione um médico</option>
+
+            <option *ngFor="let m of medicosModal()" [value]="m.idMedico">
+              {{ m.nomeMedico }}
+            </option>
           </select>
         </div>
 
         <!-- BOTÕES -->
         <div class="col-12 col-sm-4 col-md-3 d-flex gap-2 justify-content-center">
-          <button type="button" class="btn btn-dark mt-4">
+          <button type="submit" class="btn btn-dark mt-4" [disabled]="formBuscarConsultasPorDatas.invalid">
             Filtrar
           </button>
 
-          <button type="button" class="btn btn-outline-secondary mt-4">
+          <button type="button" class="btn btn-outline-secondary mt-4" (click)="formBuscarConsultasPorDatas.reset()">
             Limpar
           </button>
         </div>
@@ -101,8 +102,7 @@
                   <td>{{ consulta.dataConsulta | date:'dd/MM/yyyy' }}</td>
                   <td>{{ consulta.horaConsulta }}</td>
                   <td>
-                    <span class="badge"
-                          [ngClass]="{
+                    <span class="badge" [ngClass]="{
                             'text-bg-success': consulta.status === 'AGENDADA',
                             'text-bg-primary': consulta.status === 'CONFIRMADA',
                             'text-bg-secondary': consulta.status === 'REALIZADA',
@@ -137,29 +137,21 @@
 
             <!-- Botão Anterior -->
             <li>
-              <button
-                class="page-btn"
-                [class.disabled]="paginaAtual() === 0"
-                (click)="irParaPagina(paginaAtual() - 1)">
+              <button class="page-btn" [class.disabled]="paginaAtual() === 0" (click)="irParaPagina(paginaAtual() - 1)">
                 <i class="bi bi-chevron-left"></i>
               </button>
             </li>
 
             <!-- Números -->
             <li *ngFor="let page of totalPaginasArray()">
-              <button
-                class="page-btn"
-                [class.active]="page === paginaAtual()"
-                (click)="irParaPagina(page)">
+              <button class="page-btn" [class.active]="page === paginaAtual()" (click)="irParaPagina(page)">
                 {{ page + 1 }}
               </button>
             </li>
 
             <!-- Botão Próximo -->
             <li>
-              <button
-                class="page-btn"
-                [class.disabled]="paginaAtual() === totalPaginas() - 1"
+              <button class="page-btn" [class.disabled]="paginaAtual() === totalPaginas() - 1"
                 (click)="irParaPagina(paginaAtual() + 1)">
                 <i class="bi bi-chevron-right"></i>
               </button>
@@ -190,7 +182,7 @@
           <div class="mb-3">
             <label class="form-label">Médico</label>
             <select class="form-select" formControlName="idMedico"
-                    [class.is-invalid]="formCadastroConsulta.get('idMedico')?.invalid && formCadastroConsulta.get('idMedico')?.touched">
+              [class.is-invalid]="formCadastroConsulta.get('idMedico')?.invalid && formCadastroConsulta.get('idMedico')?.touched">
 
               <option value="" disabled>Selecione um médico</option>
 
@@ -200,7 +192,7 @@
             </select>
 
             <div class="invalid-feedback"
-                 *ngIf="formCadastroConsulta.get('idMedico')?.hasError('required') && formCadastroConsulta.get('idMedico')?.touched">
+              *ngIf="formCadastroConsulta.get('idMedico')?.hasError('required') && formCadastroConsulta.get('idMedico')?.touched">
               Médico é obrigatório.
             </div>
           </div>
@@ -211,17 +203,16 @@
 
             <div [formGroup]="formBuscarPacienteModal" class="d-flex gap-2 mb-2">
               <input type="text" class="form-control" placeholder="Digite o nome do paciente"
-                     formControlName="nomePaciente">
+                formControlName="nomePaciente">
 
-              <button type="button" class="btn btn-dark"
-                      (click)="buscarPacientesModal()"
-                      [disabled]="formBuscarPacienteModal.invalid">
+              <button type="button" class="btn btn-dark" (click)="buscarPacientesModal()"
+                [disabled]="formBuscarPacienteModal.invalid">
                 Buscar
               </button>
             </div>
 
             <select class="form-select" formControlName="idPaciente"
-                    [class.is-invalid]="formCadastroConsulta.get('idPaciente')?.invalid && formCadastroConsulta.get('idPaciente')?.touched">
+              [class.is-invalid]="formCadastroConsulta.get('idPaciente')?.invalid && formCadastroConsulta.get('idPaciente')?.touched">
               <option value="" disabled>Selecione um paciente</option>
 
               <option *ngFor="let p of pacientesModal()" [value]="p.idPaciente">
@@ -230,7 +221,7 @@
             </select>
 
             <div class="invalid-feedback"
-                 *ngIf="formCadastroConsulta.get('idPaciente')?.hasError('required') && formCadastroConsulta.get('idPaciente')?.touched">
+              *ngIf="formCadastroConsulta.get('idPaciente')?.hasError('required') && formCadastroConsulta.get('idPaciente')?.touched">
               Paciente é obrigatório.
             </div>
 
@@ -243,10 +234,10 @@
           <div class="mb-3">
             <label class="form-label">Data da consulta</label>
             <input type="date" class="form-control" formControlName="dataConsulta" [min]="hoje"
-                   [class.is-invalid]="formCadastroConsulta.get('dataConsulta')?.invalid && formCadastroConsulta.get('dataConsulta')?.touched">
+              [class.is-invalid]="formCadastroConsulta.get('dataConsulta')?.invalid && formCadastroConsulta.get('dataConsulta')?.touched">
 
             <div class="invalid-feedback"
-                 *ngIf="formCadastroConsulta.get('dataConsulta')?.hasError('required') && formCadastroConsulta.get('dataConsulta')?.touched">
+              *ngIf="formCadastroConsulta.get('dataConsulta')?.hasError('required') && formCadastroConsulta.get('dataConsulta')?.touched">
               Data da consulta é obrigatória.
             </div>
           </div>
@@ -255,7 +246,7 @@
           <div class="mb-3">
             <label class="form-label">Hora da consulta</label>
             <select class="form-select" formControlName="horaConsulta"
-                    [class.is-invalid]="formCadastroConsulta.get('horaConsulta')?.invalid && formCadastroConsulta.get('horaConsulta')?.touched">
+              [class.is-invalid]="formCadastroConsulta.get('horaConsulta')?.invalid && formCadastroConsulta.get('horaConsulta')?.touched">
               <option value="" disabled>Selecione o horário</option>
 
               <option *ngFor="let hora of horariosDisponiveis">
@@ -264,7 +255,7 @@
             </select>
 
             <div class="invalid-feedback"
-                 *ngIf="formCadastroConsulta.get('horaConsulta')?.hasError('required') && formCadastroConsulta.get('horaConsulta')?.touched">
+              *ngIf="formCadastroConsulta.get('horaConsulta')?.hasError('required') && formCadastroConsulta.get('horaConsulta')?.touched">
               Hora da consulta é obrigatória.
             </div>
           </div>
@@ -272,8 +263,7 @@
 
         <!-- Mensagem retorno -->
         <div [ngClass]="{ 'show': mensagemModal() != '' }"
-             class="alert alert-{{ tipoMensagem() }} alert-dismissible fade show"
-             *ngIf="mensagemModal() != ''">
+          class="alert alert-{{ tipoMensagem() }} alert-dismissible fade show" *ngIf="mensagemModal() != ''">
           <strong>{{ mensagemModal() }}</strong>
           <button type="button" class="btn-close" aria-label="Close" (click)="mensagemModal.set('')"></button>
         </div>
@@ -285,9 +275,8 @@
           Cancelar
         </button>
 
-        <button type="button" class="btn btn-dark mt-4"
-                (click)="salvarConsulta()"
-                [disabled]="formCadastroConsulta.invalid">
+        <button type="button" class="btn btn-dark mt-4" (click)="salvarConsulta()"
+          [disabled]="formCadastroConsulta.invalid">
           Salvar
         </button>
 

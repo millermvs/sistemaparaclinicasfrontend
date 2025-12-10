@@ -53,7 +53,7 @@ export class Medicos {
       },
       error: (e: any) => {
         this.tipoMensagem.set('danger')
-        this.mensagemPagPrincipal.set(e.error.type);
+        this.mensagemPagPrincipal.set(e.error.message || 'Erro ao buscar medicos.');
       }
     })
   }

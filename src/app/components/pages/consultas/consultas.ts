@@ -19,14 +19,10 @@ export class Consultas {
   // Lista de consultas da página atual
   consultas = signal<any[]>([]);
 
-  // Paginação (padrão Pacientes)
+  // Paginação (padrão Pacientes e médicos)
   paginaAtual = signal<number>(0);
   totalPaginas = signal<number>(0);
   tamanhoPagina = 10;
-
-  // Datas padrão só pra teste inicial (depois podemos ligar com o filtro)
-  private dataInicioPadrao = '2025-12-01';
-  private dataFimPadrao = '2025-12-31';
 
   // Mensagens
   mensagemPagPrincipal = signal<string>('');
@@ -35,15 +31,32 @@ export class Consultas {
 
   horariosDisponiveis: string[] = [];
   idClinica = 1;
-  hoje = new Date().toISOString().split('T')[0];
+  hoje = new Date();
+  dataHoje = `${this.hoje.getFullYear()}-${String(this.hoje.getMonth() + 1).padStart(2, '0')}-${String(this.hoje.getDate()).padStart(2, '0')}`;
+
 
   @ViewChild('btnCloseSalvar') btnCloseSalvar!: ElementRef<HTMLButtonElement>;
+
+  ngOnInit() {
+    this.formBuscarConsultasPorDatas.get('dataInicio')?.setValue(this.dataHoje);
+    this.formBuscarConsultasPorDatas.get('dataFim')?.setValue(this.dataHoje);
+    this.gerarHorariosDisponiveis();
+    this.buscarMedicosModal();
+    this.buscarConsultas(this.paginaAtual());    
+  }
 
   // Lista de medicos retornada pela busca ao iniciar a página
   medicosModal = signal<any[]>([]);
 
   // Lista de pacientes retornada pela busca da modal
   pacientesModal = signal<any[]>([]);
+
+  // Form só para buscar pelo intervalo de datas
+  formBuscarConsultasPorDatas = this.fb.group({
+    idMedico: [''],
+    dataInicio: ['', [Validators.required]],
+    dataFim: ['', [Validators.required]]
+  });
 
   // Form principal da consulta (ligado na modal)
   formCadastroConsulta = this.fb.group({
@@ -57,12 +70,6 @@ export class Consultas {
   formBuscarPacienteModal = this.fb.group({
     nomePaciente: ['', [Validators.required]]
   });
-
-  ngOnInit() {
-    this.gerarHorariosDisponiveis();
-    this.buscarMedicosModal();
-    this.buscarConsultas(this.paginaAtual());
-  }
 
   limparModal() {
     this.formCadastroConsulta.reset();
@@ -98,23 +105,22 @@ export class Consultas {
 
   private endpointBaseConsultas = `${environment.api.consultas}/datas`;
 
-  buscarConsultas(page: number) {
-    const url =
-      `${this.endpointBaseConsultas}/${this.dataInicioPadrao}/${this.dataFimPadrao}?page=${page}&size=${this.tamanhoPagina}`;
+  buscarConsultas(page: number) {// Datas padrão só pra teste inicial (depois podemos ligar com o filtro)
+    const dataInicio = this.formBuscarConsultasPorDatas.get('dataInicio')?.value;
+    const dataFim = this.formBuscarConsultasPorDatas.get('dataFim')?.value;;
+    const url = `${this.endpointBaseConsultas}/${dataInicio}/${dataFim}?page=${page}&size=${this.tamanhoPagina}`;
 
     this.http.get(url)
       .subscribe({
         next: (response: any) => {
-          // Esperando um Page<ConsultaResponseDto> igual Pacientes
           this.consultas.set(response.content || []);
           this.paginaAtual.set(response.number ?? 0);
           this.totalPaginas.set(response.totalPages ?? 0);
         },
         error: (e: any) => {
-          console.log(e);
           this.tipoMensagem.set('danger');
           this.mensagemPagPrincipal.set(e.error?.message || 'Erro ao buscar consultas.');
-          setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+          this.consultas.set([]);
         }
       });
   }
@@ -131,7 +137,7 @@ export class Consultas {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////Buscar medicos na modal///////////////////////////////////////////////
+  //////////////////////////////////Buscar medicos na modal///////////////////////////////////////////////
 
   buscarMedicosModal() {
     this.http.get(`${environment.api.medicos}/ativos`)
@@ -140,7 +146,6 @@ export class Consultas {
           this.medicosModal.set(response || []);
         },
         error: (e) => {
-          console.log(e);
           this.medicosModal.set([]);
         }
       });
@@ -186,7 +191,7 @@ export class Consultas {
       .subscribe({
         next: (response: any) => {
           this.tipoMensagem.set('success');
-          this.mensagemPagPrincipal.set(response.resposta);
+          this.mensagemPagPrincipal.set('Consulta com paciente foi marcada.');
           this.btnCloseSalvar.nativeElement.click();
           // Recarrega a página atual da paginação
           this.buscarConsultas(this.paginaAtual());

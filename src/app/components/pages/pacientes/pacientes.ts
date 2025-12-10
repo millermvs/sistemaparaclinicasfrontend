@@ -53,7 +53,7 @@ export class Pacientes {
           this.totalPaginas.set(response.totalPages);
         },
         error: (e: any) => {
-          this.mensagemPagPrincipal.set(e.error.type);
+          this.mensagemPagPrincipal.set(e.error.message || 'Erro ao buscar pacientes.');
           this.tipoMensagem.set('danger');
         }
       });
