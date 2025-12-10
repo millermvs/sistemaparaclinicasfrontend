@@ -42,7 +42,7 @@ export class Consultas {
     this.formBuscarConsultasPorDatas.get('dataFim')?.setValue(this.dataHoje);
     this.gerarHorariosDisponiveis();
     this.buscarMedicosModal();
-    this.buscarConsultas(this.paginaAtual());    
+    this.buscarConsultas(this.paginaAtual());
   }
 
   // Lista de medicos retornada pela busca ao iniciar a página
@@ -51,12 +51,20 @@ export class Consultas {
   // Lista de pacientes retornada pela busca da modal
   pacientesModal = signal<any[]>([]);
 
-  // Form só para buscar pelo intervalo de datas
+  // Form só para buscar pelo intervalo de datas  
   formBuscarConsultasPorDatas = this.fb.group({
     idMedico: [''],
     dataInicio: ['', [Validators.required]],
     dataFim: ['', [Validators.required]]
   });
+  limparformBuscarConsultasPorDatas() {
+    this.formBuscarConsultasPorDatas.reset({
+      idMedico: '',
+      dataInicio: this.dataHoje,
+      dataFim: this.dataHoje
+    });
+    this.buscarConsultas(0);
+  }
 
   // Form principal da consulta (ligado na modal)
   formCadastroConsulta = this.fb.group({
@@ -103,13 +111,18 @@ export class Consultas {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////Buscar consultas na pagina principal/////////////////////////////////////////
 
-  private endpointBaseConsultas = `${environment.api.consultas}/datas`;
-
   buscarConsultas(page: number) {// Datas padrão só pra teste inicial (depois podemos ligar com o filtro)
     const dataInicio = this.formBuscarConsultasPorDatas.get('dataInicio')?.value;
-    const dataFim = this.formBuscarConsultasPorDatas.get('dataFim')?.value;;
-    const url = `${this.endpointBaseConsultas}/${dataInicio}/${dataFim}?page=${page}&size=${this.tamanhoPagina}`;
-
+    const dataFim = this.formBuscarConsultasPorDatas.get('dataFim')?.value;
+    const idMedico = this.formBuscarConsultasPorDatas.get('idMedico')?.value;
+    const urlData = `${environment.api.consultas}/datas/${dataInicio}/${dataFim}?page=${page}&size=${this.tamanhoPagina}`;
+    const urlDataMedico = `${environment.api.consultas}/medico?idMedico=${idMedico}&dataInicio=${dataInicio}&dataFim=${dataFim}`;
+    let url = '';
+    if (idMedico === '' || idMedico == null) {
+      url = urlData;
+    } else {
+      url = urlDataMedico;
+    }
     this.http.get(url)
       .subscribe({
         next: (response: any) => {
