@@ -16,13 +16,24 @@ export class Dashboard {
 
   idClinica = 1;
   totalMedicos = signal<number>(0);
-  mensagemMedico = signal<string>('');
   totalPacientes = signal<number>(0);
+  totalConsultasHoje = signal<number>(0);
+  totalConsultasMes = signal<number>(0);
+  mensagemMedico = signal<string>('');
   mensagemPaciente = signal<string>('');
+  mensagemConsultaHoje = signal<string>('');
+  mensagemConsultaMes = signal<string>('');
+  hoje = new Date();
+  dataHoje = `${this.hoje.getFullYear()}-${String(this.hoje.getMonth() + 1).padStart(2, '0')}-${String(this.hoje.getDate()).padStart(2, '0')}`;
+
+  primeiroDia = `${this.hoje.getFullYear()}-${String(this.hoje.getMonth() + 1).padStart(2, '0')}-01`;
+  ultimoDia = `${this.hoje.getFullYear()}-${String(this.hoje.getMonth() + 1).padStart(2, '0')}-${String(new Date(this.hoje.getFullYear(), this.hoje.getMonth() + 1, 0).getDate()).padStart(2, '0')}`;
 
   ngOnInit() {
     this.consultarMedicos();
     this.consultarPacientes();
+    this.buscarConsultasHoje();
+    this.buscarConsultasMes();
   }
 
   private readonly endPointMedicos = `${environment.api.clinicas}/${this.idClinica}/medicos?page=0&size=1`
@@ -52,6 +63,41 @@ export class Dashboard {
       }
     });
   }
+
+  private endpointBaseConsultasHoje = `${environment.api.consultas}/datas`;
+
+  buscarConsultasHoje() {
+    const url =
+      `${this.endpointBaseConsultasHoje}/${this.dataHoje}/${this.dataHoje}?page=0&size=1`;
+
+    this.http.get(url)
+      .subscribe({
+        next: (response: any) => {
+          this.totalConsultasHoje.set(response.totalElements);
+        },
+        error: (e: any) => {
+          console.log(e)
+          this.mensagemConsultaHoje.set(e.error.errors);
+        }
+      });
+  }
+
+  private endpointBaseConsultasMes = `${environment.api.consultas}/datas`;
+ 
+   buscarConsultasMes() {
+     const url =
+       `${this.endpointBaseConsultasMes}/${this.primeiroDia}/${this.ultimoDia}?page=0&size=1`;
+ 
+     this.http.get(url)
+       .subscribe({
+         next: (response: any) => {
+           this.totalConsultasMes.set(response.totalElements);
+         },
+         error: (e: any) => {
+           this.mensagemConsultaMes.set(e.error.errors);
+         }
+       });
+   }
 
 
 
