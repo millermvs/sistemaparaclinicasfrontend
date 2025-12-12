@@ -36,6 +36,7 @@ export class Consultas {
 
 
   @ViewChild('btnCloseSalvar') btnCloseSalvar!: ElementRef<HTMLButtonElement>;
+  @ViewChild('btnCloseRemarcar') btnCloseRemarcar!: ElementRef<HTMLButtonElement>;
 
   ngOnInit() {
     this.formBuscarConsultasPorDatas.get('dataInicio')?.setValue(this.dataHoje);
@@ -64,15 +65,7 @@ export class Consultas {
       dataFim: this.dataHoje
     });
     this.buscarConsultas(0);
-  }
-
-  // Form principal da consulta (ligado na modal)
-  formCadastroConsulta = this.fb.group({
-    idMedico: ['', [Validators.required]],
-    idPaciente: ['', [Validators.required]],
-    dataConsulta: ['', [Validators.required]],
-    horaConsulta: ['', [Validators.required]],
-  });
+  }  
 
   // Form só para buscar paciente pelo nome
   formBuscarPacienteModal = this.fb.group({
@@ -110,7 +103,7 @@ export class Consultas {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////Buscar consultas na pagina principal/////////////////////////////////////////
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
   buscarConsultas(page: number) {// Datas padrão só pra teste inicial (depois podemos ligar com o filtro)
     const dataInicio = this.formBuscarConsultasPorDatas.get('dataInicio')?.value;
     const dataFim = this.formBuscarConsultasPorDatas.get('dataFim')?.value;
@@ -151,7 +144,7 @@ export class Consultas {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////Buscar medicos na modal///////////////////////////////////////////////
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
   buscarMedicosModal() {
     this.http.get(`${environment.api.medicos}/ativos`)
       .subscribe({
@@ -166,7 +159,7 @@ export class Consultas {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////Buscar pacientes na modal///////////////////////////////////////////////
-
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
   buscarPacientesModal() {
     if (this.formBuscarPacienteModal.invalid) {
       return;
@@ -190,6 +183,15 @@ export class Consultas {
 
   ///////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////Salvar consulta////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+  // Form principal da consulta (ligado na modal)
+  formCadastroConsulta = this.fb.group({
+    idMedico: ['', [Validators.required]],
+    idPaciente: ['', [Validators.required]],
+    dataConsulta: ['', [Validators.required]],
+    horaConsulta: ['', [Validators.required]],
+  });
+  
   endpointSalvar = `${environment.api.consultas}/agendar`;
 
   salvarConsulta() {
@@ -206,6 +208,59 @@ export class Consultas {
           this.tipoMensagem.set('success');
           this.mensagemPagPrincipal.set('Consulta com paciente foi marcada.');
           this.btnCloseSalvar.nativeElement.click();
+          // Recarrega a página atual da paginação
+          this.buscarConsultas(this.paginaAtual());
+          setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+        },
+        error: (e: any) => {
+          this.tipoMensagem.set('danger');
+          this.mensagemModal.set(e.error.message);
+          setTimeout(() => this.mensagemModal.set(''), 4000);
+        }
+      });
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////Remarcar consulta/////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Form principal da consulta (ligado na modal remarcar)
+  formRemarcarConsulta = this.fb.group({
+    idConsulta: [''],
+    idMedico: ['', [Validators.required]],
+    idPaciente: ['', [Validators.required]],
+    dataConsulta: ['', [Validators.required]],
+    horaConsulta: ['', [Validators.required]]
+  });
+
+  abrirModalRemarcar(consulta: any) {
+    this.formRemarcarConsulta.patchValue({
+      idConsulta: consulta.idConsulta,
+      idMedico: consulta.idMedico,
+      idPaciente: consulta.idPaciente,
+      dataConsulta: consulta.dataConsulta,
+      horaConsulta: consulta.horaConsulta
+    });
+    this.formBuscarPacienteModal.patchValue({
+      nomePaciente: consulta.nomePaciente
+    });
+  }
+
+  remarcarConsulta() {
+    const endpointRemarcar = `${environment.api.consultas}/remarcar/${this.formRemarcarConsulta.value.idConsulta}`;
+
+    const payload = {
+      idMedico: this.formRemarcarConsulta.value.idMedico,
+      idPaciente: this.formRemarcarConsulta.value.idPaciente,
+      dataConsulta: this.formRemarcarConsulta.value.dataConsulta,
+      horaConsulta: this.formRemarcarConsulta.value.horaConsulta
+    };
+
+    this.http.put(endpointRemarcar, payload)
+      .subscribe({
+        next: (response: any) => {
+          this.tipoMensagem.set('success');
+          this.mensagemPagPrincipal.set('Consulta com paciente foi remarcada.');
+          this.btnCloseRemarcar.nativeElement.click();
           // Recarrega a página atual da paginação
           this.buscarConsultas(this.paginaAtual());
           setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);

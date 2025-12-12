@@ -113,7 +113,8 @@
                   </td>
                   <td>
                     <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-warning">
+                      <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
+                        data-bs-target="#modalRemarcaConsulta" (click)="abrirModalRemarcar(consulta)">
                         Remarcar
                       </button>
                       <button class="btn btn-sm btn-outline-danger">
@@ -161,14 +162,16 @@
   </div>
 </div>
 
-<!-- MODAL DE CADASTRO DE CONSULTA -->
+<!-------------------------------------- ----------------------------- --------------------------------------->
+<!-------------------------------------- MODAL DE CADASTRO DE CONSULTA --------------------------------------->
+<!-------------------------------------- ----------------------------- --------------------------------------->
 <div class="modal fade" id="modalCadastroConsulta" tabindex="-1" (hidden.bs.modal)="limparModal()">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <!-- Cabeçalho -->
       <div class="modal-header">
-        <h5 class="modal-title">Cadastrar Consulta</h5>
+        <h5 class="modal-title text-center w-100">Cadastrar Consulta</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
@@ -278,6 +281,104 @@
         </button>
 
         <button #btnCloseSalvar type="button" class="d-none" data-bs-dismiss="modal"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-------------------------------------- ----------------------------- --------------------------------------->
+<!---------------------------------------- MODAL DE REMARCAR CONSULTA ---------------------------------------->
+<!-------------------------------------- ----------------------------- --------------------------------------->
+<div class="modal fade" id="modalRemarcaConsulta" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Cabeçalho -->
+      <div class="modal-header">
+        <h5 class="modal-title text-warning text-center w-100">Remarcar Consulta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Corpo -->
+      <div class="modal-body">
+        <form [formGroup]="formRemarcarConsulta" (ngSubmit)="remarcarConsulta()">
+          <!-- Médico -->
+          <div class="mb-3">
+            <label class="form-label">Médico</label>
+            <select class="form-select" formControlName="idMedico"
+              [class.is-invalid]="formRemarcarConsulta.get('idMedico')?.invalid && formRemarcarConsulta.get('idMedico')?.touched">
+
+              <option value="" disabled>Selecione um médico</option>
+
+              <option *ngFor="let m of medicosModal()" [value]="m.idMedico">
+                {{ m.nomeMedico }}
+              </option>
+            </select>
+
+            <div class="invalid-feedback"
+              *ngIf="formRemarcarConsulta.get('idMedico')?.hasError('required') && formRemarcarConsulta.get('idMedico')?.touched">
+              Médico é obrigatório.
+            </div>
+          </div>
+
+          <!-- Paciente -->
+          <div class="mb-3">
+            <label class="form-label">Paciente</label>
+
+            <div [formGroup]="formBuscarPacienteModal" class="d-flex gap-2 mb-2">
+              <input type="text" class="form-control" readonly formControlName="nomePaciente">
+            </div>
+          </div>
+
+          <!-- Data -->
+          <div class="mb-3">
+            <label class="form-label">Data da consulta</label>
+            <input type="date" class="form-control" formControlName="dataConsulta" [min]="hoje"
+              [class.is-invalid]="formRemarcarConsulta.get('dataConsulta')?.invalid && formRemarcarConsulta.get('dataConsulta')?.touched">
+
+            <div class="invalid-feedback"
+              *ngIf="formRemarcarConsulta.get('dataConsulta')?.hasError('required') && formRemarcarConsulta.get('dataConsulta')?.touched">
+              Data da consulta é obrigatória.
+            </div>
+          </div>
+
+          <!-- Hora -->
+          <div class="mb-3">
+            <label class="form-label">Hora da consulta</label>
+            <select class="form-select" formControlName="horaConsulta"
+              [class.is-invalid]="formRemarcarConsulta.get('horaConsulta')?.invalid && formRemarcarConsulta.get('horaConsulta')?.touched">
+              <option value="" disabled>Selecione o horário</option>
+
+              <option *ngFor="let hora of horariosDisponiveis">
+                {{ hora }}
+              </option>
+            </select>
+
+            <div class="invalid-feedback"
+              *ngIf="formRemarcarConsulta.get('horaConsulta')?.hasError('required') && formRemarcarConsulta.get('horaConsulta')?.touched">
+              Hora da consulta é obrigatória.
+            </div>
+          </div>
+
+          <!-- Mensagem retorno -->
+          <div [ngClass]="{ 'show': mensagemModal() != '' }"
+            class="alert alert-{{ tipoMensagem() }} alert-dismissible fade show" *ngIf="mensagemModal() != ''">
+            <strong>{{ mensagemModal() }}</strong>
+            <button type="button" class="btn-close" aria-label="Close" (click)="mensagemModal.set('')"></button>
+          </div>
+
+          <!-- Rodapé -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger mt-4" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-dark mt-4" [disabled]="formRemarcarConsulta.invalid">
+              Salvar
+            </button>
+            <button #btnCloseRemarcar type="button" class="d-none" data-bs-dismiss="modal"></button>            
+          </div>
+
+        </form>
       </div>
     </div>
   </div>
