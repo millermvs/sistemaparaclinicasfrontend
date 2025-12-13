@@ -117,7 +117,8 @@
                         data-bs-target="#modalRemarcaConsulta" (click)="abrirModalRemarcar(consulta)">
                         Remarcar
                       </button>
-                      <button class="btn btn-sm btn-outline-danger">
+                      <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#modalCancelarConsulta" (click)="abrirModalCancelar(consulta)">
                         Cancelar
                       </button>
                     </div>
@@ -375,11 +376,53 @@
             <button type="submit" class="btn btn-dark mt-4" [disabled]="formRemarcarConsulta.invalid">
               Salvar
             </button>
-            <button #btnCloseRemarcar type="button" class="d-none" data-bs-dismiss="modal"></button>            
+            <button #btnCloseRemarcar type="button" class="d-none" data-bs-dismiss="modal"></button>
           </div>
-
         </form>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------MODAL DE CANCELAMENTO-------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<div class="modal fade" id="modalCancelarConsulta" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Cabeçalho -->
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Confirmar cancelamento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Corpo -->
+      <div class="modal-body">
+        <p>
+          Tem certeza que deseja cancelar a consulta entre o médico
+          <strong>{{ consultaCancelar?.nomeMedico }}</strong> e o paciente <strong>{{
+            consultaCancelar?.nomePaciente }}</strong> dia <strong>{{
+            consultaCancelar?.dataConsulta | date:'dd/MM/yyyy' }}</strong> às <strong>{{
+            consultaCancelar?.horaConsulta }}</strong>?
+        </p>
+        <p class="text-muted mb-0">
+          Essa ação poderá ser desfeita remarcando a consulta.
+        </p>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Não
+        </button>
+
+        <button type="button" class="btn btn-danger" (click)="cancelarConsulta()" data-bs-dismiss="modal"
+          [disabled]="consultaCancelar?.idConsulta == null">
+          Sim
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

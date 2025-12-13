@@ -65,7 +65,7 @@ export class Consultas {
       dataFim: this.dataHoje
     });
     this.buscarConsultas(0);
-  }  
+  }
 
   // Form só para buscar paciente pelo nome
   formBuscarPacienteModal = this.fb.group({
@@ -191,7 +191,7 @@ export class Consultas {
     dataConsulta: ['', [Validators.required]],
     horaConsulta: ['', [Validators.required]],
   });
-  
+
   endpointSalvar = `${environment.api.consultas}/agendar`;
 
   salvarConsulta() {
@@ -271,5 +271,35 @@ export class Consultas {
           setTimeout(() => this.mensagemModal.set(''), 4000);
         }
       });
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////Cancelar consulta/////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
+  consultaCancelar: any = null;
+
+  abrirModalCancelar(consulta: any) {
+    this.consultaCancelar = consulta;
+  }
+
+  cancelarConsulta() {
+    const endpointCancelar = `${environment.api.consultas}/${this.consultaCancelar.idConsulta}/cancelar`;
+
+    this.http.put(endpointCancelar, {}).subscribe({
+      next: (response: any) => {
+        this.tipoMensagem.set('success');
+        this.mensagemPagPrincipal.set('Consulta com paciente foi cancelada.');
+        // Recarrega a página atual da paginação
+        this.buscarConsultas(this.paginaAtual());
+        setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+      },
+      error: (e: any) => {
+        this.tipoMensagem.set('danger');
+        this.mensagemPagPrincipal.set(e.error.message);
+        // Recarrega a página atual da paginação
+        this.buscarConsultas(this.paginaAtual());
+        setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+      }
+    });
   }
 }
