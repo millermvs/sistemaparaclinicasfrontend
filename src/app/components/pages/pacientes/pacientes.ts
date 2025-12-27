@@ -239,23 +239,12 @@ export class Pacientes {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////MetodoDelete//////////////////////////////////////////
+  //////////////////////////////////////////MetodoEnviarMensagem///////////////////////////////////
   abrirEnviarMsg(paciente: any) {
     this.pacienteSelecionado = paciente;
   }
-  EnviarMensagemPaciente() {
-    this.http.delete(`${environment.api.pacientes}/deletar/${this.pacienteSelecionado.id}`)
-      .subscribe({
-        next: (response) => {
-          this.consultarPacientes(this.paginaAtual());
-          this.mensagemPagPrincipal.set("Paciente inativado com sucesso.");
-          setTimeout(() => this.mensagemPagPrincipal.set(''), 3000);
-        },
-        error: (e: any) => {
-          this.tipoMensagem.set('danger');
-          this.mensagemPagPrincipal.set(e.error.errors);
-          setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
-        }
-      });
+  enviarMensagemPaciente() {
+    const url = `https://wa.me/${this.pacienteSelecionado.whatsAppPaciente}`;
+    window.open(url, '_blank');
   }
 }

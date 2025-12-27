@@ -7,7 +7,7 @@
 
     <!-- BOTÃO 'X' QUANDO O MENU ESTÁ ABERTO -->
     <button class="toggle-btn close-btn" *ngIf="sidebarExpanded()" (click)="toggleSidebar()">
-     ⮜
+      ⮜
     </button>
 
 
@@ -31,6 +31,12 @@
         <span class="menu-icon">📅</span>
         <span class="menu-label">Consultas</span>
       </a>
+
+      <a class="menu-item" routerLink="pages/chat">
+        <span class="menu-icon">💬</span>
+        <span class="menu-label">Chat</span>
+      </a>
+
     </nav>
 
   </aside>

@@ -221,6 +221,36 @@ export class Consultas {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////Finalizar consulta/////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////
+  consultaFinalizar: any = null;
+
+  abrirModalFinalizar(consulta: any) {
+    this.consultaFinalizar = consulta;
+  }
+
+  finalizarConsulta() {
+    const endpointFinalizar = `${environment.api.consultas}/${this.consultaFinalizar.idConsulta}/finalizar`;
+
+    this.http.put(endpointFinalizar, {}).subscribe({
+      next: (response: any) => {
+        this.tipoMensagem.set('success');
+        this.mensagemPagPrincipal.set('Consulta com paciente foi finalizada.');
+        // Recarrega a página atual da paginação
+        this.buscarConsultas(this.paginaAtual());
+        setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+      },
+      error: (e: any) => {
+        this.tipoMensagem.set('danger');
+        this.mensagemPagPrincipal.set(e.error.message);
+        // Recarrega a página atual da paginação
+        this.buscarConsultas(this.paginaAtual());
+        setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
+      }
+    });
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////Remarcar consulta/////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////
   // Form principal da consulta (ligado na modal remarcar)

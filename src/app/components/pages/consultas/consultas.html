@@ -113,6 +113,10 @@
                   </td>
                   <td>
                     <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                        data-bs-target="#modalFinalizarConsulta" (click)="abrirModalFinalizar(consulta)">
+                        Finalizar
+                      </button>
                       <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
                         data-bs-target="#modalRemarcaConsulta" (click)="abrirModalRemarcar(consulta)">
                         Remarcar
@@ -287,6 +291,49 @@
   </div>
 </div>
 
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------MODAL DE FINALIZACAO--------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<div class="modal fade" id="modalFinalizarConsulta" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Cabeçalho -->
+      <div class="modal-header">
+        <h5 class="modal-title text-success">Confirmar finalização</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Corpo -->
+      <div class="modal-body">
+        <p>
+          Tem certeza que deseja finalizar a consulta entre o médico
+          <strong>{{ consultaFinalizar?.nomeMedico }}</strong> e paciente <strong>{{
+            consultaFinalizar?.nomePaciente }}</strong> dia <strong>{{
+            consultaFinalizar?.dataConsulta | date:'dd/MM/yyyy' }}</strong> às <strong>{{
+            consultaFinalizar?.horaConsulta }}</strong>?
+        </p>
+        <p class="text-muted mb-0">
+          Essa <strong>NÃO</strong> poderá ser desfeita.
+        </p>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Não
+        </button>
+
+        <button type="button" class="btn btn-danger" (click)="finalizarConsulta()" data-bs-dismiss="modal"
+          [disabled]="consultaFinalizar?.idConsulta == null">
+          Sim
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-------------------------------------- ----------------------------- --------------------------------------->
 <!---------------------------------------- MODAL DE REMARCAR CONSULTA ---------------------------------------->
 <!-------------------------------------- ----------------------------- --------------------------------------->
@@ -401,7 +448,7 @@
       <div class="modal-body">
         <p>
           Tem certeza que deseja cancelar a consulta entre o médico
-          <strong>{{ consultaCancelar?.nomeMedico }}</strong> e o paciente <strong>{{
+          <strong>{{ consultaCancelar?.nomeMedico }}</strong> e paciente <strong>{{
             consultaCancelar?.nomePaciente }}</strong> dia <strong>{{
             consultaCancelar?.dataConsulta | date:'dd/MM/yyyy' }}</strong> às <strong>{{
             consultaCancelar?.horaConsulta }}</strong>?

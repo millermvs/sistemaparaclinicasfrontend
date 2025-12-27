@@ -1,4 +1,4 @@
-const baseUrl = 'https://automica.com.br/api/v1';
+const baseUrl = 'https://sistema.automica.com.br/api/v1';
 
 export const environment = {
   production: true,

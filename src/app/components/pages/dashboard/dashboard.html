@@ -12,24 +12,15 @@
     *ngIf="mensagemMedicos()!='' || mensagemPacientes()!='' || mensagemConsultasHoje()!='' || mensagemConsultasMes()!=''"
     class="alert alert-danger alert-dismissible fade show">
     <strong>
-      <div *ngIf="mensagemMedicos()!=''">
-        {{mensagemMedicos()}}
-      </div>
-      <div *ngIf="mensagemPacientes()!=''">
-        {{mensagemPacientes()}}
-      </div>
-      <div *ngIf="mensagemConsultasHoje()!=''">
-        {{mensagemConsultasHoje()}}
-      </div>
-      <div *ngIf="mensagemConsultasMes()!=''">
-        {{mensagemConsultasMes()}}
-      </div>
+      <div *ngIf="mensagemMedicos()!=''">{{mensagemMedicos()}}</div>
+      <div *ngIf="mensagemPacientes()!=''">{{mensagemPacientes()}}</div>
+      <div *ngIf="mensagemConsultasHoje()!=''">{{mensagemConsultasHoje()}}</div>
+      <div *ngIf="mensagemConsultasMes()!=''">{{mensagemConsultasMes()}}</div>
     </strong>
-    <button type="button" class="btn-close" aria-label="Close"
-      (click)="mensagemPacientes.set(''); 
-      mensagemMedicos.set(''); 
-      mensagemConsultasMes.set(''); 
-      mensagemConsultasHoje.set('')">
+    <button type="button" class="btn-close" aria-label="Close" (click)="mensagemPacientes.set(''); 
+               mensagemMedicos.set(''); 
+               mensagemConsultasMes.set(''); 
+               mensagemConsultasHoje.set('')">
     </button>
   </div>
 
@@ -44,9 +35,7 @@
               <h6 class="card-title text-muted mb-1">Médicos</h6>
               <h3 class="mb-0">{{totalMedicos()}}</h3>
             </div>
-            <div class="dash-icon bg-primary-subtle">
-              🩺
-            </div>
+            <div class="dash-icon bg-primary-subtle">🩺</div>
           </div>
           <small class="text-muted">Médicos ativos na clínica</small>
         </div>
@@ -62,9 +51,7 @@
               <h6 class="card-title text-muted mb-1">Pacientes</h6>
               <h3 class="mb-0">{{totalPacientes()}}</h3>
             </div>
-            <div class="dash-icon bg-success-subtle">
-              👤
-            </div>
+            <div class="dash-icon bg-success-subtle">👤</div>
           </div>
           <small class="text-muted">Pacientes cadastrados</small>
         </div>
@@ -80,9 +67,7 @@
               <h6 class="card-title text-muted mb-1">Consultas hoje</h6>
               <h3 class="mb-0">{{totalConsultasHoje()}}</h3>
             </div>
-            <div class="dash-icon bg-warning-subtle">
-              📅
-            </div>
+            <div class="dash-icon bg-warning-subtle">📅</div>
           </div>
           <small class="text-muted">Agendadas para hoje</small>
         </div>
@@ -91,16 +76,14 @@
 
     <!-- Consultas no mês -->
     <div class="col-12 col-sm-6 col-lg-3">
-      <div class="card dash-card">
+      <div class="card dash-card" routerLink="/pages/consultas">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h6 class="card-title text-muted mb-1">Consultas no mês</h6>
               <h3 class="mb-0">{{totalConsultasMes()}}</h3>
             </div>
-            <div class="dash-icon bg-info-subtle">
-              📊
-            </div>
+            <div class="dash-icon bg-info-subtle">📊</div>
           </div>
           <small class="text-muted">Total de consultas deste mês</small>
         </div>
@@ -108,19 +91,77 @@
     </div>
   </div>
 
-  <!-- ÁREA INFERIOR (futuro: tabela, gráficos, etc.) -->
-  <div class="row mt-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          Próximas consultas do dia
+  <!-- GRID INFERIOR -->
+<div class="row mt-4 g-3 dash-lower-grid">
+
+  <!-- 1) Consultas do dia (fixo) -->
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="card dash-lower-card dash-lower-card--sm">
+      <div class="card-header dash-lower-header">
+        <div class="dash-lower-title">
+          <span>Consultas do dia</span>
         </div>
-        <div class="card-body">
-          <p class="text-muted mb-0">
-            Aqui depois vamos listar as próximas consultas, puxando do backend.
-          </p>
+
+        <form [formGroup]="formFiltroConsultas" class="dash-lower-filter">
+          <select class="form-select form-select-sm" formControlName="idMedico">
+            <option value="">Todos os médicos</option>
+            <option *ngFor="let m of medicos()" [value]="m.idMedico">
+              {{ m.nomeMedico }}
+            </option>
+          </select>
+        </form>
+      </div>
+
+      <div class="card-body dash-lower-body dash-lower-body--scroll">
+        <div *ngIf="consultasHoje().length === 0" class="text-muted">
+          Nenhuma consulta encontrada para hoje.
+        </div>
+
+        <div class="list-group list-group-flush" *ngIf="consultasHoje().length > 0">
+          <div class="list-group-item dash-list-item" *ngFor="let c of consultasHoje()">
+            <div class="dash-list-left">
+              <strong class="dash-paciente">{{ c.nomePaciente }}</strong>
+              <small class="text-muted dash-sub">
+                {{ c.nomeMedico }} • {{ c.statusConsulta }}
+              </small>
+            </div>
+
+            <span class="badge bg-light text-dark dash-hora">
+              {{ c.horaConsulta }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- 2) CARD GRANDE PARA GRÁFICO -->
+  <div class="col-12 col-md-6 col-xl-6">
+    <div class="card dash-lower-card dash-lower-card--lg">
+      <div class="card-header dash-lower-header">
+        <span>Gráfico</span>
+      </div>
+
+      <div class="card-body dash-lower-body">
+        <div class="dash-empty">
+          Aqui entra o gráfico (card maior e altura fixa).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3) Card pequeno (placeholder) -->
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="card dash-lower-card dash-lower-card--sm">
+      <div class="card-header dash-lower-header">
+        <span>Card 2</span>
+      </div>
+      <div class="card-body dash-lower-body">
+        <div class="dash-empty">
+          Espaço para colocar mais informações aqui.
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

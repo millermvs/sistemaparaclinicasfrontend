@@ -139,7 +139,7 @@ export class Medicos {
 
   pesquisarPorNome() {
     let nome = this.formPesquisarMedico.value.nomeMedico;
-    let endpoint = `${environment.api.medicos}?nome=${nome}`;
+    let endpoint = `${environment.api.medicos}?nomeMedico=${nome}`;
 
     if (this.formPesquisarMedico.invalid) {
       this.consultarMedicos(0);

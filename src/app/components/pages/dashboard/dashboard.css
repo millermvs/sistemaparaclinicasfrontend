@@ -31,3 +31,129 @@
   /* fica mais sutil e moderno */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
+
+/* ============================= */
+/* CARDS DE BAIXO (SEM MEXER NO QUE JÁ EXISTE) */
+/* ============================= */
+
+.dash-lower-card {
+  /* mesmo padrão do .dash-card */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.500);
+
+  /* só pra ficar consistente com o resto */
+  overflow: hidden;
+}
+
+/* header igualzinho, sem “fundo cinza” do bootstrap */
+.dash-lower-header {
+  display: flex;
+  align-items: center;          /* alinha verticalmente */
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Título não quebra linha */
+.dash-lower-title span {
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* Select fica compacto ao lado */
+.dash-lower-filter {
+  width: 180px;                 /* controla tamanho do select */
+  max-width: 100%;
+}
+
+/* select com tamanho ok, sem quebrar */
+.dash-lower-filter {
+  width: 220px;
+  max-width: 100%;
+}
+
+/* corpo com respiro */
+.dash-lower-body {
+  padding-top: 12px;
+}
+
+/* lista clean */
+.dash-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* left: nome + sub */
+.dash-list-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dash-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-hora {
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+/* placeholder dos cards vazios */
+.dash-empty {
+  min-height: 140px;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px; /* igual seu padrão */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  padding: 14px;
+}
+.dash-lower-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+}
+
+/* ====== FIXAR TAMANHO DOS CARDS DE BAIXO ====== */
+
+/* altura fixa dos cards pequenos */
+.dash-lower-card--sm {
+  height: 340px; /* ajuste fino aqui */
+}
+
+/* card grande do gráfico: mesma altura (pra alinhar), só mais largo */
+.dash-lower-card--lg {
+  height: 340px; /* mesma altura para ficar alinhado */
+}
+
+/* para o corpo não estourar e não “encolher” layout */
+.dash-lower-body--scroll {
+  overflow-y: auto;
+  max-height: calc(340px - 56px); /* 340 - header (aprox) */
+}
+
+/* melhora o header (select ao lado do texto, sem quebrar) */
+.dash-lower-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* deixa o select realmente "ao lado do texto" e compacto */
+.dash-lower-filter {
+  width: 180px; /* você controla aqui */
+  margin: 0;
+}
+
+
+

@@ -4,6 +4,7 @@ import { Medicos } from './components/pages/medicos/medicos';
 import { Pacientes } from './components/pages/pacientes/pacientes';
 import { Consultas } from './components/pages/consultas/consultas';
 import { Login } from './components/pages/login/login';
+import { Chat } from './components/pages/chat/chat';
 
 export const routes: Routes = [
     {
@@ -25,6 +26,10 @@ export const routes: Routes = [
     {
         path : 'pages/consultas',
         component : Consultas
+    },
+    {
+        path : 'pages/chat',
+        component : Chat
     },
     {
         path : '', pathMatch : 'full', redirectTo : 'pages/login'
