@@ -4,7 +4,7 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copia o build do Angular
-COPY dist/sitemaControleAgendamentos /usr/share/nginx/html
+COPY dist/sitemaControleAgendamentos/browser/ /usr/share/nginx/html
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

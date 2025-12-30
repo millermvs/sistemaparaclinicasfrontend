@@ -118,10 +118,10 @@
   text-align: center;
   padding: 14px;
 }
-.dash-lower-card:hover {
+/*.dash-lower-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
-}
+}*/
 
 /* ====== FIXAR TAMANHO DOS CARDS DE BAIXO ====== */
 

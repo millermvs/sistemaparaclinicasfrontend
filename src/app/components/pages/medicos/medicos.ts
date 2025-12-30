@@ -300,7 +300,6 @@ export class Medicos {
     if (!this.medicoSelecionadoParaDelete) {
       return;
     }
-    console.log(this.medicoSelecionadoParaDelete);
 
     const idMedico = this.medicoSelecionadoParaDelete.idMedico;
 
@@ -308,10 +307,9 @@ export class Medicos {
 
     this.http.delete(endpoint).subscribe({
       next: (response: any) => {
-        console.log(response);
         this.consultarMedicos(this.paginaAtual());
         this.tipoMensagem.set('success');
-        this.mensagemPagPrincipal.set('Médico deletado com sucesso.');
+        this.mensagemPagPrincipal.set('Status do Médico(a) alterado com sucesso.');
         this.medicoSelecionadoParaDelete = null;
         setTimeout(() => {
           this.mensagemPagPrincipal.set('');

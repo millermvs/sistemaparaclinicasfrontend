@@ -80,10 +80,15 @@
                                                 Editar
                                             </button>
 
-                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                                data-bs-target="#modalConfirmarDeleteMedico"
+                                            <button *ngIf="medico.statusAtivo == true" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                data-bs-target="#modalConfirmarDesativarMedico"
                                                 (click)="abrirModalConfirmarDelete(medico)">
-                                                Deletar
+                                                Desativar
+                                            </button>
+                                            <button *ngIf="medico.statusAtivo == false" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                data-bs-target="#modalConfirmarAtivarMedico"
+                                                (click)="abrirModalConfirmarDelete(medico)">
+                                                Ativar
                                             </button>
                                         </div>
                                     </td>
@@ -105,10 +110,16 @@
                                                 Editar
                                             </button>
 
-                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                                data-bs-target="#modalConfirmarDeleteMedico"
+                                            <button *ngIf="medico.statusAtivo == true" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                                data-bs-target="#modalConfirmarDesativarMedico"
                                                 (click)="abrirModalConfirmarDelete(medico)">
-                                                Deletar
+                                                Desativar
+                                            </button>
+
+                                            <button *ngIf="medico.statusAtivo == false" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                data-bs-target="#modalConfirmarAtivarMedico"
+                                                (click)="abrirModalConfirmarDelete(medico)">
+                                                Ativar
                                             </button>
                                         </div>
                                     </td>
@@ -378,27 +389,67 @@
         </div>
     </div>
 </div>
+
 <!-- ----------------------------------------------------------------------------------------------------------- -->
-<!-- ---------------------------------------------MODAL DE DELETE----------------------------------------------- -->
+<!-- --------------------------------------------MODAL DE ATIVAR------------------------------------------------ -->
 <!-- ----------------------------------------------------------------------------------------------------------- -->
-<div class="modal fade" id="modalConfirmarDeleteMedico" tabindex="-1">
+<div class="modal fade" id="modalConfirmarAtivarMedico" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
             <!-- Cabeçalho -->
             <div class="modal-header">
-                <h5 class="modal-title">Confirmar exclusão</h5>
+                <h5 class="modal-title">Confirmar ativação</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <!-- Corpo -->
             <div class="modal-body">
                 <p>
-                    Tem certeza que deseja excluir o médico
+                    Tem certeza que deseja reativar o(a) médico(a)
                     <strong>{{ medicoSelecionadoParaDelete?.nomeMedico }}</strong>?
                 </p>
                 <p class="text-muted mb-0">
-                    Essa ação não poderá ser desfeita.
+                    Essa ação poderá ser desfeita desativando novamente.
+                </p>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+
+                <button type="button" class="btn btn-primary" (click)="deletarMedico()" data-bs-dismiss="modal">
+                    Reativar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<!-- -------------------------------------------MODAL DE DESATIVAR---------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+<div class="modal fade" id="modalConfirmarDesativarMedico" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Cabeçalho -->
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar desativação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Corpo -->
+            <div class="modal-body">
+                <p>
+                    Tem certeza que deseja desativar o(a) médico(a)
+                    <strong>{{ medicoSelecionadoParaDelete?.nomeMedico }}</strong>?
+                </p>
+                <p class="text-muted mb-0">
+                    Essa ação poderá ser desfeita ativando novamente.
                 </p>
             </div>
 
@@ -409,7 +460,7 @@
                 </button>
 
                 <button type="button" class="btn btn-danger" (click)="deletarMedico()" data-bs-dismiss="modal">
-                    Excluir
+                    Desativar
                 </button>
             </div>
 

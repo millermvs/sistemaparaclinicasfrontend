@@ -113,11 +113,10 @@ export class Dashboard {
   // =======================
   // CARDS
   // =======================
-  private readonly endPointMedicos = `${environment.api.clinicas}/${this.idClinica}/medicos?page=0&size=1`;
 
   carregarTotalMedicosCard() {
-    this.http.get(this.endPointMedicos).subscribe({
-      next: (response: any) => this.totalMedicos.set(response.totalElements),
+    this.http.get(`${environment.api.medicos}/ativos`).subscribe({
+      next: (response: any) => this.totalMedicos.set(response.length),
       error: (e: any) => this.mensagemMedicos.set(e.error?.message || 'erro ao consultar médicos.')
     });
   }
@@ -156,7 +155,7 @@ export class Dashboard {
   // =======================
   carregarMedicosAtivosSelect() {
     this.http.get(`${environment.api.medicos}/ativos`).subscribe({
-      next: (response: any) => this.medicos.set(response || []),
+      next: (response: any) => this.medicos.set(response || []),      
       error: () => this.medicos.set([])
     });
   }
@@ -207,13 +206,13 @@ export class Dashboard {
 
   private buildChartOptions(categories: string[], data: number[]): Highcharts.Options {
     return {
-      chart: { type: 'bar'}, // ✅ barra horizontal
+      chart: { type: 'bar'}, // barra horizontal
       title: { text: 'Consultas por médico (mês)' },
       xAxis: { categories, title: { text: null } },
       yAxis: {
         min: 0,
         title: { text: 'Quantidade', align: 'high' },
-        labels: { overflow: 'justify' },
+        labels: { enabled: false },
       },
       tooltip: { valueSuffix: ' consultas' },
       plotOptions: { bar: { dataLabels: { enabled: true } } },
