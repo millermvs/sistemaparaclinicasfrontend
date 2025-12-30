@@ -92,76 +92,86 @@
   </div>
 
   <!-- GRID INFERIOR -->
-<div class="row mt-4 g-3 dash-lower-grid">
+  <div class="row mt-4 g-3 dash-lower-grid">
 
-  <!-- 1) Consultas do dia (fixo) -->
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card dash-lower-card dash-lower-card--sm">
-      <div class="card-header dash-lower-header">
-        <div class="dash-lower-title">
-          <span>Consultas do dia</span>
+    <!-- 1) Consultas do dia (fixo) -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="card dash-lower-card dash-lower-card--sm">
+        <div class="card-header dash-lower-header">
+          <div class="dash-lower-title">
+            <span>Consultas do dia</span>
+          </div>
+
+          <form [formGroup]="formFiltroConsultas" class="dash-lower-filter">
+            <select class="form-select form-select-sm" formControlName="idMedico">
+              <option value="">Todos os médicos</option>
+              <option *ngFor="let m of medicos()" [value]="m.idMedico">
+                {{ m.nomeMedico }}
+              </option>
+            </select>
+          </form>
         </div>
 
-        <form [formGroup]="formFiltroConsultas" class="dash-lower-filter">
-          <select class="form-select form-select-sm" formControlName="idMedico">
-            <option value="">Todos os médicos</option>
-            <option *ngFor="let m of medicos()" [value]="m.idMedico">
-              {{ m.nomeMedico }}
-            </option>
-          </select>
-        </form>
-      </div>
+        <div class="card-body dash-lower-body dash-lower-body--scroll">
+          <div *ngIf="consultasHoje().length === 0" class="text-muted">
+            Nenhuma consulta encontrada para hoje.
+          </div>
 
-      <div class="card-body dash-lower-body dash-lower-body--scroll">
-        <div *ngIf="consultasHoje().length === 0" class="text-muted">
-          Nenhuma consulta encontrada para hoje.
-        </div>
+          <div class="list-group list-group-flush" *ngIf="consultasHoje().length > 0">
+            <div class="list-group-item dash-list-item" *ngFor="let c of consultasHoje()">
+              <div class="dash-list-left">
+                <strong class="dash-paciente">{{ c.nomePaciente }}</strong>
+                <small class="text-muted dash-sub">
+                  🩺{{ c.nomeMedico }} • {{ c.status }}
+                </small>
+              </div>
 
-        <div class="list-group list-group-flush" *ngIf="consultasHoje().length > 0">
-          <div class="list-group-item dash-list-item" *ngFor="let c of consultasHoje()">
-            <div class="dash-list-left">
-              <strong class="dash-paciente">{{ c.nomePaciente }}</strong>
-              <small class="text-muted dash-sub">
-                {{ c.nomeMedico }} • {{ c.statusConsulta }}
-              </small>
+              <span class="badge bg-light text-dark dash-hora">
+                {{ c.horaConsulta }}
+              </span>
             </div>
-
-            <span class="badge bg-light text-dark dash-hora">
-              {{ c.horaConsulta }}
-            </span>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 2) CARD GRANDE PARA GRÁFICO -->
-  <div class="col-12 col-md-6 col-xl-6">
-    <div class="card dash-lower-card dash-lower-card--lg">
-      <div class="card-header dash-lower-header">
-        <span>Gráfico</span>
-      </div>
+    <!-- 2) CARD GRANDE PARA GRÁFICO -->
+    <div class="col-12 col-md-6 col-xl-6">
+      <div class="card dash-lower-card dash-lower-card--lg">
+        <div class="card-header dash-lower-header">
+          <span>Gráfico</span>
+        </div>
 
-      <div class="card-body dash-lower-body">
-        <div class="dash-empty">
-          Aqui entra o gráfico (card maior e altura fixa).
+        <div class="card-body dash-lower-body dash-chart-body">
+          <ng-container *ngIf="chartConsultasPorMedico(); else semDados">
+            <!-- Wrapper que segura tamanho/altura do gráfico -->
+            <div class="dash-chart-wrapper">
+              <div class="dash-chart" [chart]="chartConsultasPorMedico()"></div>
+            </div>
+          </ng-container>
+
+          <ng-template #semDados>
+            <div class="dash-chart-empty">
+              <p class="text-muted mb-0">Sem dados para exibir no período.</p>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 3) Card pequeno (placeholder) -->
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card dash-lower-card dash-lower-card--sm">
-      <div class="card-header dash-lower-header">
-        <span>Card 2</span>
-      </div>
-      <div class="card-body dash-lower-body">
-        <div class="dash-empty">
-          Espaço para colocar mais informações aqui.
+
+    <!-- 3) Card pequeno (placeholder) -->
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="card dash-lower-card dash-lower-card--sm">
+        <div class="card-header dash-lower-header">
+          <span>Card 2</span>
+        </div>
+        <div class="card-body dash-lower-body">
+          <div class="dash-empty">
+            Espaço para colocar mais informações aqui.
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-</div>
+  </div>

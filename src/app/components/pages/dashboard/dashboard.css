@@ -155,5 +155,32 @@
   margin: 0;
 }
 
+/* Faz o body do card trabalhar como layout */
+.dash-chart-body{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
+/* Área do gráfico com altura garantida */
+.dash-chart-wrapper{
+  width: 100%;
+  min-height: 360px;     /* ajuste aqui se quiser maior/menor */
+  height: 360px;         /* altura fixa pro gráfico não “vazar” */
+  overflow: hidden;      /* segura o que passar */
+}
 
+/* O div que recebe o [chart] precisa ocupar 100% */
+.dash-chart{
+  width: 100%;
+  height: 100%;
+}
+
+/* Estado vazio centralizado e bonitinho */
+.dash-chart-empty{
+  width: 100%;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
