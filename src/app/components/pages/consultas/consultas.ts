@@ -127,6 +127,7 @@ export class Consultas {
           this.tipoMensagem.set('danger');
           this.mensagemPagPrincipal.set(e.error?.message || 'Erro ao buscar consultas.');
           this.consultas.set([]);
+          setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
         }
       });
   }
