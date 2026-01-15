@@ -1,0 +1,9 @@
+.auth-wrapper {
+  background-color: #f5f5f5; /* opcional, só pra dar contraste */
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+}

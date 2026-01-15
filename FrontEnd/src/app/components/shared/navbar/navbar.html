@@ -1,0 +1,43 @@
+<div class="app-layout d-flex">
+  <aside class="sidebar" [class.sidebar-expanded]="sidebarExpanded()">
+
+    <button class="toggle-btn" (click)="toggleSidebar()" *ngIf="!sidebarExpanded()">
+      ☰
+    </button>
+
+    <!-- BOTÃO 'X' QUANDO O MENU ESTÁ ABERTO -->
+    <button class="toggle-btn close-btn" *ngIf="sidebarExpanded()" (click)="toggleSidebar()">
+      ⮜
+    </button>
+
+
+    <nav class="menu mt-3">
+      <a class="menu-item" routerLink="pages/dashboard">
+        <span class="menu-icon">🏠</span>
+        <span class="menu-label">Dashboard</span>
+      </a>
+
+      <a class="menu-item" routerLink="pages/medicos">
+        <span class="menu-icon">🩺</span>
+        <span class="menu-label">Médicos</span>
+      </a>
+
+      <a class="menu-item" routerLink="pages/pacientes">
+        <span class="menu-icon">👤</span>
+        <span class="menu-label">Pacientes</span>
+      </a>
+
+      <a class="menu-item" routerLink="pages/consultas">
+        <span class="menu-icon">📅</span>
+        <span class="menu-label">Consultas</span>
+      </a>
+
+      <a class="menu-item" routerLink="pages/chat">
+        <span class="menu-icon">💬</span>
+        <span class="menu-label">Chat</span>
+      </a>
+
+    </nav>
+
+  </aside>
+</div>

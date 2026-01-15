@@ -1,4 +1,4 @@
-const baseUrl = 'https://sistemaapi.automica.com.br/api/v1';
+const baseUrl = 'https://sistema.automica.com.br/api/v1';
 const baseUrlWhatsApp = 'https://whatsappapi.automica.com.br//whatsapp/mensagens';
 
 export const environment = {

@@ -1,10 +1,49 @@
+# ==============================
+# STAGE 1 — BUILD DO ANGULAR
+# ==============================
+
+# Usamos Node 20 porque seu projeto é Angular 20
+FROM node:20-alpine AS build
+
+# Define o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copiamos primeiro apenas os arquivos de dependência
+# Isso ajuda o Docker a reaproveitar cache quando o código muda,
+# mas as dependências não.
+COPY package.json package-lock.json ./
+
+# Instala as dependências exatamente como definidas no package-lock
+# npm ci é mais previsível e recomendado para ambientes de CI/CD
+RUN npm ci
+
+# Agora copiamos TODO o resto do projeto
+COPY . .
+
+# Executa o build de produção do Angular
+# Isso vai gerar a pasta:
+# dist/sitemaControleAgendamentos/browser
+RUN npm run build -- --configuration production
+
+
+# ==============================
+# STAGE 2 — NGINX (RUNTIME)
+# ==============================
+
+# Agora entramos em uma imagem leve só para servir arquivos estáticos
 FROM nginx:alpine
 
-# Config do Nginx para SPA (Angular)
+# Copia a configuração do Nginx
+# Aqui entra o try_files /index.html para SPA funcionar
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copia o build do Angular
-COPY dist/sitemaControleAgendamentos/browser/ /usr/share/nginx/html
+# Copia SOMENTE o resultado do build do Angular
+# Repara que vem do stage "build"
+COPY --from=build /app/dist/sitemaControleAgendamentos/browser/ /usr/share/nginx/html
 
+# Expõe a porta 80 (padrão do Nginx)
 EXPOSE 80
+
+# Sobe o Nginx em primeiro plano (obrigatório em containers)
 CMD ["nginx", "-g", "daemon off;"]
+
