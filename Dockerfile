@@ -37,9 +37,12 @@ FROM nginx:alpine
 # Aqui entra o try_files /index.html para SPA funcionar
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copia SOMENTE o resultado do build do Angular
-# Repara que vem do stage "build"
-COPY --from=build /app/dist/sitemaControleAgendamentos/browser/ /usr/share/nginx/html
+# (Recomendado) remove o conteúdo padrão do nginx
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copia o conteúdo do build (pasta browser) DIRETO para a raiz do nginx
+# Assim o /index.html vira o do Angular, e não o "Welcome to nginx"
+COPY --from=build /app/dist/sitemaControleAgendamentos/browser/. /usr/share/nginx/html/
 
 # Expõe a porta 80 (padrão do Nginx)
 EXPOSE 80
