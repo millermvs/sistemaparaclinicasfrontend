@@ -1,52 +1,38 @@
 # ==============================
 # STAGE 1 — BUILD DO ANGULAR
 # ==============================
-
-# Usamos Node 20 porque seu projeto é Angular 20
 FROM node:20-alpine AS build
 
-# Define o diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copiamos primeiro apenas os arquivos de dependência
-# Isso ajuda o Docker a reaproveitar cache quando o código muda,
-# mas as dependências não.
+# Dependências primeiro (melhor cache)
 COPY package.json package-lock.json ./
-
-# Instala as dependências exatamente como definidas no package-lock
-# npm ci é mais previsível e recomendado para ambientes de CI/CD
 RUN npm ci
 
-# Agora copiamos TODO o resto do projeto
+# Código
 COPY . .
 
-# Executa o build de produção do Angular
-# Isso vai gerar a pasta:
-# dist/sitemaControleAgendamentos/browser
-RUN npm run build -- --configuration production
+# Build de produção (gera dist/.../browser)
+RUN npm run build -- --configuration=production
 
 
 # ==============================
 # STAGE 2 — NGINX (RUNTIME)
 # ==============================
-
-# Agora entramos em uma imagem leve só para servir arquivos estáticos
 FROM nginx:alpine
 
-# Copia a configuração do Nginx
-# Aqui entra o try_files /index.html para SPA funcionar
+# Config SPA do nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# (Recomendado) remove o conteúdo padrão do nginx
+# Remove conteúdo default do nginx
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copia o conteúdo do build (pasta browser) DIRETO para a raiz do nginx
-# Assim o /index.html vira o do Angular, e não o "Welcome to nginx"
-COPY --from=build /app/dist/sitemaControleAgendamentos/browser/. /usr/share/nginx/html/
+# Copia o build do Angular (browser) para a RAIZ do nginx
+COPY --from=build /app/dist/sitemaControleAgendamentos/browser/ /usr/share/nginx/html/
 
-# Expõe a porta 80 (padrão do Nginx)
+# Healthcheck simples
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1
+
 EXPOSE 80
-
-# Sobe o Nginx em primeiro plano (obrigatório em containers)
 CMD ["nginx", "-g", "daemon off;"]
-
