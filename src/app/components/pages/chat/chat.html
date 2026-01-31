@@ -1,5 +1,5 @@
 <!-- chat.component.html -->
-<div class="app">
+<div class="app" [class.mobile-show-list]="mobileView() === 'list'" [class.mobile-show-chat]="mobileView() === 'chat'">
   <!-- LEFT: LISTA DE CONVERSAS -->
   <aside class="sidebar">
     <header class="side-header">
@@ -15,7 +15,7 @@
 
     <div class="side-search">
       <span class="search-ico" aria-hidden="true">🔎</span>
-      <input type="text" placeholder="Pesquisar ou começar uma nova conversa..." />
+      <input type="text" placeholder="Pesquisar uma nova conversa..." />
     </div>
 
     <nav class="side-filters" aria-label="Filtros">
@@ -26,93 +26,29 @@
     </nav>
 
     <div class="chat-list">
-      <button class="chat-item active" type="button">
-        <div class="avatar" aria-hidden="true">P</div>
-
-        <div class="chat-meta">
-          <div class="row">
-            <span class="name">Paciente João</span>
-            <span class="time">6:25 PM</span>
-          </div>
-
-          <div class="row sub">
-            <span class="last">Paciente João: Obrigado!</span>
-          </div>
+      <button class="chat-item" type="button" *ngFor="let conversa of conversas()" (click)="abrirConversa(conversa)">
+        <div class="avatar" aria-hidden="true">
+          <img src="https://picsum.photos/40" alt="Avatar" />
         </div>
-      </button>
-
-      <button class="chat-item" type="button">
-        <div class="avatar" aria-hidden="true">P</div>
 
         <div class="chat-meta">
           <div class="row">
-            <span class="name">Paciente Matheus</span>
-            <span class="time">4:51 PM</span>
+            <span class="name">
+              {{ conversa.displayPhoneNumber || conversa.waId }}
+            </span>
+
+            <div class="row sub">
+              <span class="last">
+                Útima mensagem mostrar aqui
+              </span>
+            </div>
+
+            <span class="time">
+              {{ conversa.lastMessageAt | date:'HH:mm' }}
+            </span>
           </div>
 
-          <div class="row sub">
-            <span class="last">Paciente Matheus: Que boom…</span>
-          </div>
-        </div>
-      </button>
 
-      <button class="chat-item" type="button">
-        <div class="avatar" aria-hidden="true">P</div>
-
-        <div class="chat-meta">
-          <div class="row">
-            <span class="name">Paciente Kaio</span>
-            <span class="time">3:51 PM</span>
-          </div>
-
-          <div class="row sub">
-            <span class="last">Paciente Kaio: reagiu com 😂…</span>
-          </div>
-        </div>
-      </button>
-
-      <button class="chat-item" type="button">
-        <div class="avatar" aria-hidden="true">P</div>
-
-        <div class="chat-meta">
-          <div class="row">
-            <span class="name">Paciente Marcus Mesquita</span>
-            <span class="time">3:01 PM</span>
-          </div>
-
-          <div class="row sub">
-            <span class="last">✓ Vlw</span>
-          </div>
-        </div>
-      </button>
-
-      <button class="chat-item" type="button">
-        <div class="avatar" aria-hidden="true">P</div>
-
-        <div class="chat-meta">
-          <div class="row">
-            <span class="name">Paciente Manoela Gomes</span>
-            <span class="time">2:59 PM</span>
-          </div>
-
-          <div class="row sub">
-            <span class="last">✓ Então está confirmado.</span>
-          </div>
-        </div>
-      </button>
-
-      <button class="chat-item" type="button">
-        <div class="avatar" aria-hidden="true">P</div>
-
-        <div class="chat-meta">
-          <div class="row">
-            <span class="name">Paciente Maria</span>
-            <span class="time">2:11 PM</span>
-          </div>
-
-          <div class="row sub">
-            <span class="last">✓ Melhor repousar em casa.</span>
-          </div>
         </div>
       </button>
     </div>
@@ -122,18 +58,26 @@
   <main class="chat">
     <header class="chat-header">
       <div class="chat-left">
-        <div class="avatar lg" aria-hidden="true">P</div>
+        <!-- Botão voltar -->
+        <button class="icon-btn back-btn" type="button" (click)="voltarParaLista()" aria-label="Voltar" title="Voltar">
+          ←
+        </button>
+
+        <div class="avatar lg" aria-hidden="true"><div class="avatar" aria-hidden="true">
+          <img src="https://picsum.photos/40" alt="Avatar" />
+        </div></div>
 
         <div class="chat-title">
-          <span class="title">Paciente João</span>
+          <span class="title">{{conversaSelecionada()?.waId}}</span>
           <span class="status">online</span>
         </div>
       </div>
 
+
       <div class="chat-actions">
-        <button class="icon-btn" aria-label="Vídeo" title="Vídeo" type="button">📹</button>
-        <button class="icon-btn" aria-label="Ligar" title="Ligar" type="button">📞</button>
-        <button class="icon-btn" aria-label="Pesquisar" title="Pesquisar" type="button">🔎</button>
+        <!--<button class="icon-btn" aria-label="Vídeo" title="Vídeo" type="button">📹</button>-->
+        <!--<button class="icon-btn" aria-label="Ligar" title="Ligar" type="button">📞</button>-->
+        <!--<button class="icon-btn" aria-label="Pesquisar" title="Pesquisar" type="button">🔎</button>-->
         <button class="icon-btn" aria-label="Menu" title="Menu" type="button">⋮</button>
       </div>
     </header>

@@ -1,5 +1,6 @@
 const baseUrl = 'http://localhost:8080/api/v1';
-const baseUrlWhatsApp = 'http://localhost:8082/whatsapp';
+const baseUrlConversas = 'http://localhost:8082/conversas';
+const baseUrlMensagens = 'http://localhost:8082/mensagens';
 
 export const environment = {
   production: false,
@@ -8,7 +9,9 @@ export const environment = {
     clinicas: `${baseUrl}/clinicas`,
     pacientes: `${baseUrl}/pacientes`,
     consultas: `${baseUrl}/consultas`,
-    mensagemInicialTemplate: `${baseUrlWhatsApp}/mensagens`
+    mensagemInicialTemplate: `${baseUrlConversas}/criar`,
+    listarConversas: `${baseUrlConversas}/listar`,
+    enviarMsgTexto: `${baseUrlMensagens}/enviar/texto`
   }
 };
 
