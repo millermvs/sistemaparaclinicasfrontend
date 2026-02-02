@@ -65,7 +65,7 @@
           </div>
         </div>
 
-        <div class="chat-title" >
+        <div class="chat-title">
           <span class="title">{{conversaSelecionada()?.profileName || conversaSelecionada()?.waId}}</span>
           <span class="status">online</span>
         </div>
@@ -99,19 +99,20 @@
 
       </ng-container>
 
-      
+
       <div class="spacer"></div>
     </section>
 
-    <footer class="composer">
-      <button class="icon-btn" aria-label="Anexar" title="Anexar" type="button">＋</button>
-      <button class="icon-btn" aria-label="Emoji" title="Emoji" type="button">😊</button>
+    <form [formGroup]="formEnviarMsgTexto" (ngSubmit)="enviarMensagemTexto(conversaSelecionada())">
+      <footer class="composer">
+        <button class="icon-btn" aria-label="Anexar" title="Anexar" type="button">＋</button>
+        <button class="icon-btn" aria-label="Emoji" title="Emoji" type="button">😊</button>
 
-      <div class="input-wrap">
-        <input type="text" placeholder="Digite uma mensagem" />
-      </div>
-
-      <button class="icon-btn primary" aria-label="Enviar" title="Enviar" type="button">➤</button>
-    </footer>
+        <div class="input-wrap">
+          <input type="text" placeholder="Digite uma mensagem" formControlName="body"/>
+        </div>
+        <button class="icon-btn primary" aria-label="Enviar" title="Enviar" type="submit" [disabled]="formEnviarMsgTexto.invalid">➤</button>
+      </footer>
+    </form>
   </main>
 </div>

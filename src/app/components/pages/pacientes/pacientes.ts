@@ -246,16 +246,16 @@ export class Pacientes {
     const profileName = this.pacienteSelecionado.nomePaciente;
     const waId = this.pacienteSelecionado.whatsAppPaciente;
     const url = `?waid=${waId}&phoneNumberId=445562525305334&wabaId=459801293879309&displayPhoneNumber=5521969579934&profileName=${profileName}`;
-    this.http.post(environment.api.mensagemInicialTemplate + url, '').subscribe({
-      next: (response) => {
+    this.http.post(environment.api.mensagemInicialTemplate + url, '', { responseType: 'text' }).subscribe({
+      next: (response: any) => {
         this.tipoMensagem.set('success');
-        this.mensagemPagPrincipal.set('Mensagem enviada ao paciente, acesse o chat para acompanhar a conversa.');
-        console.log(response);
+        this.mensagemPagPrincipal.set(response);
+        setTimeout(() => this.mensagemPagPrincipal.set(''), 4000);
       },
-      error: (e) => {
+      error: (e: any) => {
         this.tipoMensagem.set('danger');
-        this.mensagemModal.set(e.error.message);
-        console.log(e);
+        this.mensagemPagPrincipal.set(e.error ?? 'Erro ao enviar.');
+        setTimeout(() => this.mensagemModal.set(''), 4000);
       }
     })
   }
