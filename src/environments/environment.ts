@@ -11,6 +11,7 @@ export const environment = {
     consultas: `${baseUrl}/consultas`,
     mensagemInicialTemplate: `${baseUrlConversas}/criar`,
     listarConversas: `${baseUrlConversas}/listar`,
+    listarMensagens: `${baseUrlMensagens}`,
     enviarMsgTexto: `${baseUrlMensagens}/enviar/texto`
   }
 };

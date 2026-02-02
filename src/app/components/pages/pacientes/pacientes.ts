@@ -243,12 +243,18 @@ export class Pacientes {
     this.pacienteSelecionado = paciente;
   }
   enviarMensagemPaciente() {
-    const url = `?destinatario=${this.pacienteSelecionado.whatsAppPaciente}`;
+    const profileName = this.pacienteSelecionado.nomePaciente;
+    const waId = this.pacienteSelecionado.whatsAppPaciente;
+    const url = `?waid=${waId}&phoneNumberId=445562525305334&wabaId=459801293879309&displayPhoneNumber=5521969579934&profileName=${profileName}`;
     this.http.post(environment.api.mensagemInicialTemplate + url, '').subscribe({
-      next:(response) => {
+      next: (response) => {
+        this.tipoMensagem.set('success');
+        this.mensagemPagPrincipal.set('Mensagem enviada ao paciente, acesse o chat para acompanhar a conversa.');
         console.log(response);
       },
-      error:(e) => {
+      error: (e) => {
+        this.tipoMensagem.set('danger');
+        this.mensagemModal.set(e.error.message);
         console.log(e);
       }
     })

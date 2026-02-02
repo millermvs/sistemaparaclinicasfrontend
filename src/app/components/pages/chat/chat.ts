@@ -14,6 +14,7 @@ export class Chat {
   private http = inject(HttpClient);
 
   conversas = signal<any[]>([]);
+  mensagens = signal<any[]>([]);
   mobileView = signal<'list' | 'chat'>('list');
   conversaSelecionada = signal<any | null>(null);
 
@@ -25,6 +26,7 @@ export class Chat {
   abrirConversa(conversa: any) {
     this.conversaSelecionada.set(conversa);
     console.log(conversa)
+    this.carregarMensagens(conversa)
     // Só muda a view no mobile. No desktop, pode ficar como está.
     if (window.innerWidth <= 920) {
       this.mobileView.set('chat');
@@ -40,7 +42,6 @@ export class Chat {
     this.http.get(environment.api.listarConversas).subscribe({
       next: (response: any) => {
         this.conversas.set(response.content);
-        console.log(this.conversas());
       },
       error: (e: any) => {
         console.log(e)
@@ -48,7 +49,19 @@ export class Chat {
     })
   }
 
-  listarMensagens(){
+  carregarMensagens(conversa: any){
 
+    this.http.get(environment.api.listarMensagens + `?idconversa=${conversa.idConversa}`).subscribe({
+      next: (response: any) => {
+        this.mensagens.set(response.content)
+        console.log(this.mensagens());
+      },
+      error: (e: any) => {
+        console.log("erro ao carregar mensagens: " + e);
+      }
+    })
+
+    
+    
   }
 }

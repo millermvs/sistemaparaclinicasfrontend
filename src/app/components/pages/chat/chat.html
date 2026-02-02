@@ -34,28 +34,24 @@
         <div class="chat-meta">
           <div class="row">
             <span class="name">
-              {{ conversa.displayPhoneNumber || conversa.waId }}
+              {{ conversa.profileName || conversa.waId }}
             </span>
-
             <div class="row sub">
               <span class="last">
                 Útima mensagem mostrar aqui
               </span>
             </div>
-
             <span class="time">
               {{ conversa.lastMessageAt | date:'HH:mm' }}
             </span>
           </div>
-
-
         </div>
       </button>
     </div>
   </aside>
 
   <!-- RIGHT: CONVERSA -->
-  <main class="chat">
+  <main class="chat" *ngIf="conversaSelecionada() != null">
     <header class="chat-header">
       <div class="chat-left">
         <!-- Botão voltar -->
@@ -63,12 +59,14 @@
           ←
         </button>
 
-        <div class="avatar lg" aria-hidden="true"><div class="avatar" aria-hidden="true">
-          <img src="https://picsum.photos/40" alt="Avatar" />
-        </div></div>
+        <div class="avatar lg" aria-hidden="true">
+          <div class="avatar" aria-hidden="true">
+            <img src="https://picsum.photos/40" alt="Avatar" />
+          </div>
+        </div>
 
-        <div class="chat-title">
-          <span class="title">{{conversaSelecionada()?.waId}}</span>
+        <div class="chat-title" >
+          <span class="title">{{conversaSelecionada()?.profileName || conversaSelecionada()?.waId}}</span>
           <span class="status">online</span>
         </div>
       </div>
@@ -83,48 +81,25 @@
     </header>
 
     <section class="messages" aria-label="Mensagens">
-      <article class="msg out">
-        <div class="bubble">
-          Amanhã será sua consulta às 16h
-          <div class="meta">6:18 PM ✓✓</div>
-        </div>
-      </article>
+      <ng-container *ngFor="let msg of mensagens()">
 
-      <article class="msg out">
-        <div class="bubble">
-          Você confirma sua presença?
-          <div class="meta">6:18 PM ✓✓</div>
-        </div>
-      </article>
+        <article class="msg out" *ngIf="msg.direcaoMensagem === 'SAIDA'">
+          <div class="bubble">
+            {{ msg.texto }}
+            <div class="meta">{{ msg.enviadaEm | date:'HH:mm' }}</div>
+          </div>
+        </article>
 
-      <article class="msg in">
-        <div class="bubble">
-          Sim, confirmo.
-          <div class="meta">6:25 PM</div>
-        </div>
-      </article>
+        <article class="msg in" *ngIf="msg.direcaoMensagem === 'ENTRADA'">
+          <div class="bubble">
+            {{ msg.texto }}
+            <div class="meta">{{ msg.recebidaEm | date:'HH:mm' }}</div>
+          </div>
+        </article>
 
-      <article class="msg out">
-        <div class="bubble">
-          Muito obrigado pela confirmação.
-          <div class="meta">6:25 PM ✓✓</div>
-        </div>
-      </article>
+      </ng-container>
 
-      <article class="msg out">
-        <div class="bubble">
-          Te esperamos lá!
-          <div class="meta">6:25 PM ✓✓</div>
-        </div>
-      </article>
-
-      <article class="msg in">
-        <div class="bubble">
-          Obrigado!
-          <div class="meta">6:25 PM</div>
-        </div>
-      </article>
-
+      
       <div class="spacer"></div>
     </section>
 
